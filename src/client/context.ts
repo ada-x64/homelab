@@ -10,7 +10,7 @@ export interface State {
     id: string;
     email: string;
     name: string;
-    image: string | null | undefined;
+    image?: string | null | undefined;
     emailVerified: boolean;
     createdAt: Date;
     updatedAt: Date;

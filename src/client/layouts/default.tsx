@@ -16,7 +16,15 @@ import type { State } from "../context";
 import { authClient } from "../auth.js";
 
 export default function Auth({ children }: PropsWithChildren) {
-  const { snapshot }: { snapshot: any } = useRouteContext();
+  const { state, snapshot }: { state: State; snapshot: State } =
+    useRouteContext();
+  // check for session before showing login page
+  authClient.useSession.subscribe((session) => {
+    if (session.data) {
+      state.user = session.data.user;
+    }
+  });
+
   return <Suspense>{!!snapshot.user ? children : <Login />}</Suspense>;
 }
 

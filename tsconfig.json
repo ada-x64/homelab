@@ -15,7 +15,7 @@
     "noUnusedLocals": true,
     "removeComments": true,
     "resolveJsonModule": true,
-    "rootDirs": ["src", "src/client"],
+    "rootDirs": ["src", "dist"],
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,

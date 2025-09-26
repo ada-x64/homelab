@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import Fastify from "fastify";
 import FastifyVite from "@fastify/vite";
 import FastifyFormBody from "@fastify/formbody";
-import AuthApi from "./server/authApi.js";
+import AuthApi from "./server/auth-api.js";
 import FastifyCors from "@fastify/cors";
 interface Database {
   todoList: string[];

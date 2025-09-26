@@ -1,4 +1,6 @@
 import { Suspense, useState, type PropsWithChildren } from "react";
+import z from "zod";
+// @ts-expect-error No types available
 import { useRouteContext } from "@fastify/react/client";
 import {
   Box,
@@ -25,28 +27,23 @@ function Login() {
   const [un, setUn] = useState("");
   const [pw, setPw] = useState("");
   const [loading, setLoading] = useState(false);
+  const [unErr, setUnError] = useState(false);
   const error = !loading && submitted && !snapshot.user;
 
   const submit = async () => {
     setSubmitted(true);
     setLoading(true);
-    new Promise((resolve, reject) => {
+    const res = await authClient.signIn.email({
+      email: un,
+      password: pw,
+    });
+    const user = res.data?.user || null;
+    state.user = user;
+
+    return new Promise((resolve, reject) => {
       setTimeout(async () => {
-        const res = await authClient.signIn.email({
-          email: un,
-          password: pw,
-          fetchOptions: {
-            onRequest: (ctx) => {
-              setLoading(true);
-            },
-            onResponse: (ctx) => {
-              setLoading(false);
-            },
-          },
-        });
-        const user = res.data?.user || null;
-        state.user = user;
-      }, 1000);
+        setLoading(false);
+      }, 5000);
     });
   };
 
@@ -66,16 +63,26 @@ function Login() {
             >
               <div>
                 <TextField
-                  error={error}
+                  error={error || unErr}
+                  disabled={loading}
                   required
                   id="email"
                   label="Email"
-                  onChange={(e) => setUn(e.target.value)}
+                  onChange={(e) => {
+                    try {
+                      const email = z.email().parse(e.target.value);
+                      setUn(email);
+                      setUnError(false);
+                    } catch {
+                      setUnError(true);
+                    }
+                  }}
                 ></TextField>
               </div>
               <div>
                 <TextField
                   error={error}
+                  disabled={loading}
                   required
                   type="password"
                   id="password"
@@ -88,7 +95,9 @@ function Login() {
                   loading={loading}
                   variant="contained"
                   onClick={submit}
-                  disabled={loading}
+                  disabled={
+                    un.length == 0 || pw.length == 0 || loading || unErr
+                  }
                 >
                   Submit
                 </Button>

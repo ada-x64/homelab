@@ -23,6 +23,9 @@ importers:
       '@fastify/formbody':
         specifier: ^8.0.2
         version: 8.0.2
+      '@fastify/http-proxy':
+        specifier: ^11.3.0
+        version: 11.3.0
       '@fastify/one-line-logger':
         specifier: ^2.0.2
         version: 2.0.2
@@ -44,6 +47,9 @@ importers:
       '@types/better-sqlite3':
         specifier: ^7.6.13
         version: 7.6.13
+      '@types/lodash':
+        specifier: ^4.17.20
+        version: 4.17.20
       '@unhead/react':
         specifier: ^2.0.8
         version: 2.0.17(react@19.1.1)
@@ -62,6 +68,9 @@ importers:
       history:
         specifier: ^5.3.0
         version: 5.3.0
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       minipass:
         specifier: ^7.1.2
         version: 7.1.2
@@ -740,6 +749,9 @@ packages:
   '@fastify/forwarded@3.0.0':
     resolution: {integrity: sha512-kJExsp4JCms7ipzg7SJ3y8DwmePaELHxKYtg+tZow+k0znUTf3cb+npgyqm8+ATZOdmfgfydIebPDWM172wfyA==}
 
+  '@fastify/http-proxy@11.3.0':
+    resolution: {integrity: sha512-FXFxkdTlXqVI11fqlxmHqOPzIo0elBA60o3bfdh2seD44KWOBBzelzCVgs1OelrxuADCyWUQp2ZxA2wp3mqQMg==}
+
   '@fastify/merge-json-schemas@0.2.1':
     resolution: {integrity: sha512-OA3KGBCy6KtIvLf8DINC5880o5iBlDX4SxzLQS8HorJAbqluzLRn80UXU0bxZn7UOFhFgpRJDasfwn9nG4FG4A==}
 
@@ -754,6 +766,9 @@ packages:
 
   '@fastify/react@1.1.0':
     resolution: {integrity: sha512-COjGW0YiLxIPEO7/3fMSB1XniaqcLRVbgAeWhxcsunwNbGWL9MLHQkuKzEza5f+ioVSlGWhd36nj/JmgAaJpGQ==}
+
+  '@fastify/reply-from@12.3.1':
+    resolution: {integrity: sha512-uaeijLjIceeU+T+9P50rMSOkLeKfBpv9blvw3kbK9+8ZJxTjGAgDkveW20ZiWMerWKd7WVHx6NiMPvQJ55eBLQ==}
 
   '@fastify/send@4.1.0':
     resolution: {integrity: sha512-TMYeQLCBSy2TOFmV95hQWkiTYgC/SEx7vMdV+wnZVX4tt8VBLKzmH8vV9OzJehV0+XBfg+WxPMt5wp+JBUKsVw==}
@@ -1228,6 +1243,9 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
+  '@types/lodash@4.17.20':
+    resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
+
   '@types/node@22.18.6':
     resolution: {integrity: sha512-r8uszLPpeIWbNKtvWRt/DbVi5zbqZyj1PTmhRMqBMvDnaz1QpmSKujUtJLrqGZeoM8v72MfYggDceY4K1itzWQ==}
 
@@ -1581,6 +1599,9 @@ packages:
     resolution: {integrity: sha512-XYfuKMvj4O35f/pOXLObndIRvyQ+/+6AhODh+OKWj9S9498pHHn/IMszH+gt0fBCRWMNfk1ZSp5x3AifmnI2vg==}
     engines: {node: '>=6'}
 
+  fast-content-type-parse@3.0.0:
+    resolution: {integrity: sha512-ZvLdcY8P+N8mGQJahJV5G4U88CSvT1rP8ApL6uETe88MBXrBHAkZlSEySdUlyztF7ccb+Znos3TFqaepHxdhBg==}
+
   fast-copy@3.0.2:
     resolution: {integrity: sha512-dl0O9Vhju8IrcLndv2eU4ldt1ftXMqqfgN4H1cpmGV7P6jeB9FwpN9a2c8DPGE1Ys88rNUJVYDHq73CGAGOPfQ==}
 
@@ -1884,6 +1905,9 @@ packages:
   locate-path@7.2.0:
     resolution: {integrity: sha512-gvVijfZvn7R+2qyPX8mAuKcFGDf6Nc61GdvGafQsHL0sBIxfKzA+usWn4GFC/bk+QdwPUD4kWFJLhElipq+0VA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
+  lodash@4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
 
   loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
@@ -2541,6 +2565,10 @@ packages:
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
+  undici@7.16.0:
+    resolution: {integrity: sha512-QEg3HPMll0o3t2ourKwOeUAZ159Kn9mx5pnzHRQO8+Wixmh88YdZRiIwat0iNzNNXn0yoEtXJqFpyW7eM8BV7g==}
+    engines: {node: '>=20.18.1'}
+
   unhead@2.0.17:
     resolution: {integrity: sha512-xX3PCtxaE80khRZobyWCVxeFF88/Tg9eJDcJWY9us727nsTC7C449B8BUfVBmiF2+3LjPcmqeoB2iuMs0U4oJQ==}
 
@@ -2629,6 +2657,18 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+
+  ws@8.18.3:
+    resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
 
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
@@ -3268,6 +3308,16 @@ snapshots:
 
   '@fastify/forwarded@3.0.0': {}
 
+  '@fastify/http-proxy@11.3.0':
+    dependencies:
+      '@fastify/reply-from': 12.3.1
+      fast-querystring: 1.1.2
+      fastify-plugin: 5.0.1
+      ws: 8.18.3
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   '@fastify/merge-json-schemas@0.2.1':
     dependencies:
       dequal: 2.0.3
@@ -3309,6 +3359,16 @@ snapshots:
       - '@types/react'
       - fastify
       - vite
+
+  '@fastify/reply-from@12.3.1':
+    dependencies:
+      '@fastify/error': 4.2.0
+      end-of-stream: 1.4.5
+      fast-content-type-parse: 3.0.0
+      fast-querystring: 1.1.2
+      fastify-plugin: 5.0.1
+      toad-cache: 3.7.0
+      undici: 7.16.0
 
   '@fastify/send@4.1.0':
     dependencies:
@@ -3788,6 +3848,8 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
+  '@types/lodash@4.17.20': {}
+
   '@types/node@22.18.6':
     dependencies:
       undici-types: 6.21.0
@@ -4136,6 +4198,8 @@ snapshots:
 
   expand-template@2.0.3: {}
 
+  fast-content-type-parse@3.0.0: {}
+
   fast-copy@3.0.2: {}
 
   fast-decode-uri-component@1.0.1: {}
@@ -4404,6 +4468,8 @@ snapshots:
   locate-path@7.2.0:
     dependencies:
       p-locate: 6.0.0
+
+  lodash@4.17.21: {}
 
   loose-envify@1.4.0:
     dependencies:
@@ -5117,6 +5183,8 @@ snapshots:
 
   undici-types@6.21.0: {}
 
+  undici@7.16.0: {}
+
   unhead@2.0.17:
     dependencies:
       hookable: 5.5.3
@@ -5174,6 +5242,8 @@ snapshots:
       strip-ansi: 7.1.2
 
   wrappy@1.0.2: {}
+
+  ws@8.18.3: {}
 
   yallist@3.1.1: {}
 

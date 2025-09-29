@@ -2,11 +2,11 @@ import { resolve } from "node:path";
 import Fastify from "fastify";
 import FastifyVite from "@fastify/vite";
 import FastifyFormBody from "@fastify/formbody";
-import AuthApi from "./server/auth-api.js";
 import FastifyCors from "@fastify/cors";
-interface Database {
-  todoList: string[];
-}
+
+import ConfigPlugin from "./server/config.js";
+import AuthApiPlugin from "./server/auth-api.js";
+import InitAdminPlugin from "./server/init-admin.js";
 
 const server = Fastify({
   logger: {
@@ -27,26 +27,6 @@ await server.register(FastifyVite, {
 
 await server.vite.ready();
 
-server.decorate<Database>("db", {
-  todoList: ["Do laundry", "Respond to emails", "Write report"],
-});
-
-server.put<{
-  Body: string;
-}>("/api/todo/items", (req, reply) => {
-  const db = server.getDecorator<Database>("db");
-  db.todoList.push(req.body);
-  reply.send({ ok: true });
-});
-
-server.delete<{
-  Body: number;
-}>("/api/todo/items", (req, reply) => {
-  const db = server.getDecorator<Database>("db");
-  db.todoList.splice(req.body, 1);
-  reply.send({ ok: true });
-});
-
 // Configure CORS policies
 server.register(FastifyCors, {
   origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
@@ -56,6 +36,9 @@ server.register(FastifyCors, {
   maxAge: 86400,
 });
 
-server.register(AuthApi);
+server.register(AuthApiPlugin);
+server.register(ConfigPlugin);
+server.register(InitAdminPlugin);
 
-await server.listen({ port: 3000 });
+const port = process.env.PORT ? +process.env.PORT : 3000;
+await server.listen({ port });

@@ -1,3 +1,4 @@
+import { type User, type Session } from "better-auth";
 import {
   Suspense,
   useState,
@@ -19,20 +20,20 @@ import {
 import cn from "../cn.js";
 import type { State } from "../context";
 import { authClient } from "../auth.js";
+import { useStore } from "@nanostores/react";
+
+export const streaming = true;
 
 export default function Auth({ children }: PropsWithChildren) {
-  const { state, snapshot }: { state: State; snapshot: State } =
-    useRouteContext();
-  // check for session before showing login page
-  authClient.useSession.subscribe((session) => {
-    if (session.data) {
-      state.user = session.data.user;
-    }
-  });
-
+  const session = useStore(authClient.useSession);
+  if (session.data) {
+    return children;
+  }
   return (
     <div className={cn(["flex", "justify-center", "items-center", "h-dvh"])}>
-      <Suspense>{!!snapshot.user ? children : <Login />}</Suspense>
+      <Suspense fallback={<></>}>
+        {session.data ? children : <Login />}
+      </Suspense>
     </div>
   );
 }
@@ -54,8 +55,10 @@ function Login() {
       email: un,
       password: pw,
     });
-    const user = res.data?.user || null;
-    state.user = user;
+    state.user = res.data?.user as User;
+
+    const res2 = await authClient.getSession();
+    state.session = res2.data?.session as Session;
 
     return new Promise((resolve, reject) => {
       setTimeout(async () => {

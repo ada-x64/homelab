@@ -1,12 +1,8 @@
-/* mui */
-@import "@fontsource/roboto/300.css";
-@import "@fontsource/roboto/400.css";
-@import "@fontsource/roboto/500.css";
-@import "@fontsource/roboto/700.css";
-
-@tailwind base;
-@tailwind components;
+@import "tailwindcss";
+@import tailwindcss/preflight;
 @tailwind utilities;
+
+@source "src/client/**/*.{js,ts,jsx,tsx}";
 
 body {
     padding: 0px;

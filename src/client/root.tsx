@@ -1,22 +1,20 @@
-import { Suspense } from "react";
+import { Suspense, type JSXElementConstructor } from "react";
 import { Routes, Route } from "react-router";
 import { Router, AppRoute } from "$app/core.tsx";
-import { createTheme, ThemeProvider } from "@mui/material";
 
-// TODO: Make this work actually
-const theme = createTheme({
-  colorSchemes: {
-    dark: true,
-    light: true,
-  },
-});
 export default function Root({ url, routes, head, ctxHydration, routeMap }) {
   return (
-    <ThemeProvider theme={theme}>
-      <Suspense>
-        <Router location={url}>
-          <Routes>
-            {routes.map(({ path, component: Component }) => (
+    <Suspense>
+      <Router location={url}>
+        <Routes>
+          {routes.map(
+            ({
+              path,
+              component: Component,
+            }: {
+              path: string;
+              component: JSXElementConstructor<any>;
+            }) => (
               <Route
                 key={path}
                 path={path}
@@ -30,10 +28,10 @@ export default function Root({ url, routes, head, ctxHydration, routeMap }) {
                   </AppRoute>
                 }
               />
-            ))}
-          </Routes>
-        </Router>
-      </Suspense>
-    </ThemeProvider>
+            ),
+          )}
+        </Routes>
+      </Router>
+    </Suspense>
   );
 }

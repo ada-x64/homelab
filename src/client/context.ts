@@ -1,3 +1,5 @@
+import { type User, type Session } from "better-auth";
+
 // The default export function runs exactly once on
 // the server and once on the client during the
 // first render, that is, it's not executed again
@@ -6,15 +8,8 @@ export default (ctx) => {};
 
 export interface State {
   // from betterAuth
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    image?: string | null | undefined;
-    emailVerified: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-  } | null;
+  user: User | null;
+  session: Session | null;
 }
 
 // State initializer, must be a function called state
@@ -23,5 +18,6 @@ export interface State {
 export function state(): State {
   return {
     user: null,
+    session: null,
   };
 }

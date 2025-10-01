@@ -7,8 +7,9 @@ import { type Config, ConfigSchema } from "../types.js";
 import proxy from "@fastify/http-proxy";
 import z from "zod";
 
+export let config: Config | undefined;
+
 const plugin: FastifyPluginAsync = async (server) => {
-  let config: Config;
   try {
     let raw = await readFile("assets/config.json", { encoding: "utf8" });
     raw = JSON.parse(raw.toString());
@@ -26,6 +27,8 @@ const plugin: FastifyPluginAsync = async (server) => {
     throw new Error();
   }
 
+  server.decorate("config", config);
+
   const serverMap = _.keyBy(config.servers, "name");
   for (const app of config.apps) {
     const ip = serverMap[app.host].ip;
@@ -36,5 +39,11 @@ const plugin: FastifyPluginAsync = async (server) => {
     });
   }
 };
+
+declare module "fastify" {
+  interface FastifyInstance {
+    config: Config;
+  }
+}
 
 export default plugin;

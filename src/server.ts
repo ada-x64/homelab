@@ -6,6 +6,7 @@ import FastifyCors from "@fastify/cors";
 import ConfigPlugin from "./server/config.js";
 import AuthApiPlugin from "./server/auth-api.js";
 import InitAdminPlugin from "./server/init-admin.js";
+import WakePlugin from "./server/wake.js";
 import { createRenderFunction } from "./server/renderer.js";
 
 const server = Fastify({
@@ -37,6 +38,7 @@ server.register(FastifyCors, {
 server.register(AuthApiPlugin);
 server.register(ConfigPlugin);
 server.register(InitAdminPlugin);
+server.register(WakePlugin);
 
 const port = process.env.PORT ? +process.env.PORT : 3000;
 await server.listen({ port });

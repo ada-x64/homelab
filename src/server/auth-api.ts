@@ -1,5 +1,6 @@
-import type { FastifyPluginCallback } from "fastify";
+import type { FastifyPluginCallback, FastifyRequest } from "fastify";
 import { auth } from "./auth.js";
+import type { FastifyInstance } from "fastify/types/instance.js";
 
 const plugin: FastifyPluginCallback = (server) => {
   server.route({
@@ -36,6 +37,25 @@ const plugin: FastifyPluginCallback = (server) => {
       }
     },
   });
+
+  server.decorateRequest("getSession", getSession);
 };
+async function getSession(this: FastifyRequest) {
+  try {
+    const headers = new Headers();
+    Object.entries(this.headers).forEach(([key, value]) => {
+      if (value) headers.append(key, value.toString());
+    });
+    return await auth.api.getSession({ headers });
+  } catch (error) {
+    null;
+  }
+}
+
+declare module "fastify" {
+  interface FastifyRequest {
+    getSession: typeof getSession;
+  }
+}
 
 export default plugin;

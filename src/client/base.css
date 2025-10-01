@@ -1,8 +1,8 @@
 @import "tailwindcss";
-@import tailwindcss/preflight;
-@tailwind utilities;
 
-@source "src/client/**/*.{js,ts,jsx,tsx}";
+@plugin "flowbite-react/plugin/tailwindcss";
+@source "../../.flowbite-react/class-list.json";
+@custom-variant dark (&:where(.dark, .dark *));
 
 body {
     padding: 0px;

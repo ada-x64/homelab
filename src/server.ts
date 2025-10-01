@@ -1,12 +1,12 @@
 import { resolve } from "node:path";
 import Fastify from "fastify";
 import FastifyVite from "@fastify/vite";
-import FastifyFormBody from "@fastify/formbody";
 import FastifyCors from "@fastify/cors";
 
 import ConfigPlugin from "./server/config.js";
 import AuthApiPlugin from "./server/auth-api.js";
 import InitAdminPlugin from "./server/init-admin.js";
+import { createRenderFunction } from "./server/renderer.js";
 
 const server = Fastify({
   logger: {
@@ -18,9 +18,9 @@ const server = Fastify({
 
 await server.register(FastifyVite, {
   root: resolve(import.meta.dirname, ".."),
-  distDir: import.meta.dirname, // This file will also live in the dist folder when built
-  renderer: "@fastify/react",
-  dev: true,
+  distDir: import.meta.dirname,
+  dev: process.argv.includes("--dev"),
+  createRenderFunction,
 });
 
 await server.vite.ready();

@@ -1,22 +1,6 @@
 import cn from "../cn";
-import { useRouteContext } from "@fastify/react/client";
-import { ConfigSchema, type Config, type App, type Server } from "../../types";
-
-export async function getData(): Promise<{ config: Config }> {
-  const fs = await import("fs");
-  const json = JSON.parse(fs.readFileSync("assets/config.json", "utf8"));
-  const config = ConfigSchema.parse(json);
-
-  return {
-    config,
-  };
-}
-
-export function getMeta() {
-  return {
-    title: "LAN Dashboard",
-  };
-}
+/** @ts-ignore no types */
+import { type Config, type App, type Server } from "../../types";
 
 export function Glances({ title, src }: { title: string; src: URL | string }) {
   // sync from glances... just use an iframe
@@ -30,9 +14,7 @@ function ServerStatus({ server }: { server: Server }) {
   return <div>{server.name}</div>;
 }
 
-export default function Index() {
-  const { data }: { data: { config: Config } } = useRouteContext();
-  const config = data.config;
+export default function Dash({ config }: { config: Config }) {
   return (
     <>
       <div className={cn(["grid", "grid-cols-2"])}>

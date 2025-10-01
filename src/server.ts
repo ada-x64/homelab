@@ -35,10 +35,10 @@ server.register(FastifyCors, {
   maxAge: 86400,
 });
 
-server.register(AuthApiPlugin);
-server.register(ConfigPlugin);
-server.register(InitAdminPlugin);
-server.register(WakePlugin);
+await server.register(AuthApiPlugin);
+await server.register(ConfigPlugin);
+await server.register(InitAdminPlugin);
+await server.register(WakePlugin);
 
 const port = process.env.PORT ? +process.env.PORT : 3000;
 await server.listen({ port });

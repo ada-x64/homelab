@@ -1,6 +1,7 @@
 import type { FastifyPluginCallback, FastifyRequest } from "fastify";
 import { auth } from "./auth.js";
 import type { FastifyInstance } from "fastify/types/instance.js";
+import fp from "fastify-plugin";
 
 const plugin: FastifyPluginCallback = (server) => {
   server.route({
@@ -48,7 +49,7 @@ async function getSession(this: FastifyRequest) {
     });
     return await auth.api.getSession({ headers });
   } catch (error) {
-    null;
+    return null;
   }
 }
 
@@ -58,4 +59,4 @@ declare module "fastify" {
   }
 }
 
-export default plugin;
+export default fp(plugin, { name: "auth-api" });

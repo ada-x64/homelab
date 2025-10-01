@@ -4,7 +4,7 @@ import { type FastifyViteOptions } from "@fastify/vite";
 
 import * as devalue from "devalue";
 import clientIndex from "../client/index.js";
-import config from "./config.js";
+import { config } from "./config.js";
 
 export const createRenderFunction: FastifyViteOptions["createRenderFunction"] =
   ({ createApp }: { createApp: typeof clientIndex.createApp }) => {

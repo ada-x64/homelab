@@ -18,6 +18,7 @@ export const WolSchema = z.object({
   interval: z.number().or(z.undefined()).default(100),
   port: z.number().or(z.undefined()).default(9),
   count: z.number().or(z.undefined()).default(3),
+  broadcastAddr: z.string().or(z.undefined()),
 });
 export type WolOpts = z.infer<typeof WolSchema>;
 

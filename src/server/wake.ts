@@ -15,36 +15,41 @@ const packet = ({ macAddress }: WolOpts) => {
 };
 
 const broadcastAddr = (ip: string, netmask: string) => {
+  console.log(`broadcastAddr: {ip: ${ip}, netmask: ${netmask}}`);
   const a = ip.split(".").map((s) => parseInt(s, 10));
   const b = netmask.split(".").map((s) => parseInt(s, 10));
   const c = _.zip(a, b).map(([a, b]) => {
-    if (!a || !b) return;
-    (a & b) | (b ^ 255);
+    if (a == undefined || b == undefined) return;
+    return (a & b) | (b ^ 255);
   });
   return c.join(".");
 };
 
 const sendToAll = (opts: WolOpts) => {
-  const promises = Object.values(os.networkInterfaces())?.flatMap((values) => {
-    values?.map((i) => {
-      if (i.internal || !net.isIPv4(i.address)) {
-        return;
-      }
-      let optsClone = Object.assign({}, opts);
-      optsClone.from = i.address;
-      optsClone.macAddress = broadcastAddr(i.address, i.netmask);
-      return send(optsClone);
-    });
-  });
-  return Promise.all(promises);
+  console.log("send to all");
+  const promises = Object.values(os.networkInterfaces())
+    ?.flatMap((values) => {
+      values?.map((i) => {
+        if (i.internal || !net.isIPv4(i.address)) {
+          return Promise.resolve();
+        }
+        let optsClone = Object.assign({}, opts);
+        optsClone.from = i.address;
+        optsClone.broadcastAddr = broadcastAddr(i.address, i.netmask);
+        return sendSingle(optsClone);
+      });
+    })
+    .filter(Boolean);
+  return Promise.all(promises || []);
 };
 
 const sendSingle = (opts: WolOpts) => {
+  console.log("sendSingle", opts);
   return new Promise<void>((resolve, reject) => {
     try {
       const pkt = packet(opts);
       const socket = dgram.createSocket({
-        type: (net.isIPv6(opts.macAddress) ? "upd6" : "upd4") as SocketType,
+        type: net.isIPv6(opts.macAddress) ? "udp6" : "udp4",
       });
       socket.unref();
 
@@ -61,7 +66,14 @@ const sendSingle = (opts: WolOpts) => {
       };
 
       const doSend = () =>
-        socket.send(pkt, 0, pkt.length, opts.port, opts.macAddress, checkDone);
+        socket.send(
+          pkt,
+          0,
+          pkt.length,
+          opts.port,
+          opts.broadcastAddr,
+          checkDone,
+        );
 
       socket.bind(0, opts.from, () => {
         socket.setBroadcast(true);
@@ -76,7 +88,8 @@ const sendSingle = (opts: WolOpts) => {
 };
 
 export function send(opts: WolOpts) {
-  if (!opts.from) {
+  console.log("send", opts);
+  if (!opts.from || opts.from == "all") {
     return sendToAll(opts);
   } else {
     return sendSingle(opts);
@@ -84,7 +97,7 @@ export function send(opts: WolOpts) {
 }
 
 export const plugin: FastifyPluginCallback = (server) => {
-  server.post(
+  server.post<{ Body: { server: string } }>(
     "/wake",
     {
       schema: {
@@ -93,17 +106,18 @@ export const plugin: FastifyPluginCallback = (server) => {
           properties: {
             server: { type: "string" },
           },
+          required: ["server"],
         },
       },
     },
     async (req, reply) => {
-      server.log.info(req);
+      server.log.info(`req=${Object.getOwnPropertyNames(req)}`);
       const session = await req.getSession();
       if (session == null || session == undefined) {
         return reply.status(401).send();
       }
       const toWake = server.config.servers.find(
-        (server) => server.name == req.body.sever,
+        (server) => server.name == req.body.server,
       );
       if (!toWake) {
         return reply.status(404).send("Could not find the requested server.");
@@ -111,13 +125,12 @@ export const plugin: FastifyPluginCallback = (server) => {
       if (!toWake?.wakeOnLan) {
         return reply.status(403).send("This server is not set up for WOL.");
       }
-      send(toWake.wakeOnLan)
-        .then(() => {
-          return reply.status(200).send("WOL packet sent!");
-        })
-        .catch((err) => {
-          return reply.status(500).send(err);
-        });
+      try {
+        await send(toWake.wakeOnLan);
+        return reply.status(200).send("WOL packet sent!");
+      } catch (err) {
+        return reply.status(500).send(err);
+      }
     },
   );
 };

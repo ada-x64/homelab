@@ -6,6 +6,7 @@ import { readFile } from "node:fs/promises";
 import { type Config, ConfigSchema } from "../types.js";
 import proxy from "@fastify/http-proxy";
 import z from "zod";
+import fp from "fastify-plugin";
 
 export let config: Config | undefined;
 
@@ -46,4 +47,4 @@ declare module "fastify" {
   }
 }
 
-export default plugin;
+export default fp(plugin, { name: "config" });

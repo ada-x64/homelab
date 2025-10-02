@@ -14,18 +14,25 @@ export type App = z.infer<typeof AppSchema>;
 export const macRegex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
 export const WolSchema = z.object({
   macAddress: z.string().regex(macRegex),
-  from: z.ipv4().or(z.undefined()).or(z.string().regex(/^all$/)).default("all"),
-  interval: z.number().or(z.undefined()).default(100),
-  port: z.number().or(z.undefined()).default(9),
-  count: z.number().or(z.undefined()).default(3),
-  broadcastAddr: z.string().or(z.undefined()),
+  from: z.ipv4().or(z.string().regex(/^all$/)).default("all"),
+  interval: z.number().default(100),
+  port: z.number().default(9),
+  count: z.number().default(3),
+  broadcastAddr: z.string().optional(),
 });
 export type WolOpts = z.infer<typeof WolSchema>;
+
+export const StatusSchema = z.object({
+  apiPort: z.number().default(61208),
+  apiRoute: z.string().default("/api/4"),
+});
+export type Status = z.infer<typeof StatusSchema>;
 
 export const ServerSchema = z.object({
   name: z.string(),
   ip: z.ipv4().or(z.ipv6()),
-  wakeOnLan: z.undefined().or(WolSchema),
+  wakeOnLan: WolSchema.or(z.undefined()),
+  status: StatusSchema.default(StatusSchema.parse({})),
 });
 export type Server = z.infer<typeof ServerSchema>;
 

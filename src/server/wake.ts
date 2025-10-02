@@ -2,7 +2,7 @@
 
 import os from "os";
 import net from "net";
-import dgram, { type SocketType } from "dgram";
+import dgram from "dgram";
 import type { WolOpts } from "../types.js";
 import _ from "lodash";
 import type { FastifyPluginCallback } from "fastify";

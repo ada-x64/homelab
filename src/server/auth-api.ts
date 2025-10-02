@@ -1,6 +1,5 @@
 import type { FastifyPluginCallback, FastifyRequest } from "fastify";
 import { auth } from "./auth.js";
-import type { FastifyInstance } from "fastify/types/instance.js";
 import fp from "fastify-plugin";
 
 const plugin: FastifyPluginCallback = (server) => {

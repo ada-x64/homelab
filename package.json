@@ -16,6 +16,7 @@
     "@fastify/http-proxy": "^11.3.0",
     "@fastify/one-line-logger": "^2.0.2",
     "@fastify/react": "^1.1.0",
+    "@fastify/static": "^8.2.0",
     "@fastify/vite": "^8.2.0",
     "@fontsource/roboto": "^5.2.8",
     "@nanostores/react": "^1.0.0",
@@ -35,7 +36,9 @@
     "minipass": "^7.1.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-error-boundary": "^6.0.0",
     "react-router": "^7.5.0",
+    "sass": "^1.93.2",
     "valtio": "^2.1.4",
     "zod": "^4.1.11"
   },

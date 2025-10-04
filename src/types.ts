@@ -3,7 +3,7 @@ import { z } from "zod";
 export const AppSchema = z.object({
   name: z.string(),
   host: z.string(),
-  port: z.number().nonnegative().lte(9999),
+  port: z.number().nonnegative().lte(99999),
   path: z.string().or(z.undefined()),
   hostPath: z.string().or(z.undefined()),
   icon: z.string().or(z.undefined()),
@@ -91,7 +91,7 @@ export type QuickLook = z.infer<typeof QuickLookSchema>;
 /** Containers schema in the style of Glances.
  * https://glances.readthedocs.io/en/latest/api.html#get-containers
  */
-export const ContainersSchema = z.object({
+export const ContainerSchema = z.object({
   name: z.string(),
   id: z.string(),
   image: z.array(z.string()),
@@ -134,4 +134,18 @@ export const ContainersSchema = z.object({
   }),
 });
 
-type Containers = z.infer<typeof ContainersSchema>;
+export type Container = z.infer<typeof ContainerSchema>;
+
+export const SystemSchema = z.object({
+  os_name: z.string(),
+  hostname: z.string(),
+  platform: z.string(),
+  linux_distro: z.string().or(z.undefined()),
+  os_version: z.string(),
+  hr_name: z.string(),
+});
+
+export type System = z.infer<typeof SystemSchema>;
+
+export const UptimeSchema = z.string();
+export type Uptime = z.infer<typeof UptimeSchema>;

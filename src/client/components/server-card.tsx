@@ -1,16 +1,24 @@
 /** @ts-ignore no types */
-import { type Server, type QuickLook } from "../../types";
+import {
+  type Server,
+  type QuickLook,
+  type Uptime,
+  type System,
+  type Container,
+} from "../../types";
 import { Button, Card, Spinner } from "flowbite-react";
 import _ from "lodash";
-import { useEffect, useState } from "react";
-import type { Container } from "react-dom/client";
-import CodeBlock from "./code-block";
+import { useEffect, useState, type Dispatch } from "react";
+import ServerStats from "./server-stats";
 
 export default function ServerCard({ server }: { server: Server }) {
   const [quicklook, setQuicklook] = useState<QuickLook | null>(null);
-  const [containers, setContainers] = useState<Container | null>(null);
+  const [containers, setContainers] = useState<Container[] | null>(null);
+  const [uptime, setUptime] = useState<Uptime | null>(null);
+  const [system, setSystem] = useState<System | null>(null);
   const [failed, setFailed] = useState<boolean>(false);
   const [retry, setRetry] = useState<number>(0);
+
   useEffect(() => {
     console.log("polling...");
     const maxTries = 3;
@@ -21,12 +29,16 @@ export default function ServerCard({ server }: { server: Server }) {
         console.log("ping");
         setFailed(false);
         const base = `http://${server.ip}:${server.status.apiPort}${server.status.apiRoute}`;
-        let response = await fetch(base + "/quicklook");
-        let body = await response.json();
-        setQuicklook(body);
-        response = await fetch(base + "/containers");
-        body = await response.json();
-        setContainers(body);
+        for (const [endpoint, setter] of [
+          ["/quicklook", setQuicklook],
+          ["/containers", setContainers],
+          ["/uptime", setUptime],
+          ["/system", setSystem],
+        ]) {
+          const response = await fetch(base + endpoint);
+          const body = await response.json();
+          (setter as Dispatch<Object>)(body);
+        }
         if (!interval) {
           interval = setInterval(ping, 2000);
         }
@@ -37,14 +49,16 @@ export default function ServerCard({ server }: { server: Server }) {
           console.info(
             `Failed to fetch stats for ${server.ip}. Clearing interval.`,
           );
+          setQuicklook(null);
+          setContainers(null);
           clearInterval(interval);
-        } else {
         }
       }
     };
     ping();
     return () => clearInterval(interval);
   }, [retry]);
+
   let content;
   if (!failed && quicklook == null && containers == null) {
     content = (
@@ -69,22 +83,22 @@ export default function ServerCard({ server }: { server: Server }) {
   } else {
     // temp
     content = (
-      <div>
-        <CodeBlock
-          language="json"
-          className="max-h-52 overflow-auto"
-          text={
-            JSON.stringify(quicklook, undefined, 2) +
-            "\n" +
-            JSON.stringify(containers, undefined, 2)
-          }
-        ></CodeBlock>
-      </div>
+      <ServerStats
+        quicklook={quicklook!}
+        containers={containers!}
+        uptime={uptime!}
+        system={system!}
+      ></ServerStats>
     );
   }
+
   return (
     <Card className="flex">
-      <div className="text-sm text-gray-500 dark:text-gray-400">
+      <div className="text-sm font-semibold text-gray-500 dark:text-gray-200 flex items-center gap-2">
+        <img
+          src="/public/server.svg"
+          className="size-4 dark:invert dark:brightness-25"
+        />
         {server.name}
       </div>
       {content}

@@ -5,3 +5,8 @@ export default function (classes: string[] | string) {
     return classes;
   }
 }
+
+export const formatPct = new Intl.NumberFormat("us-en", {
+  style: "percent",
+  minimumFractionDigits: 2,
+}).format;

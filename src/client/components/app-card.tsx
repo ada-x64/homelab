@@ -14,7 +14,7 @@ export default function AppIcon({
   const src = app.icon ? `/assets/${app.icon}` : `/public/no-image.svg`;
   const invert = app.icon ? "" : "dark:invert";
   return (
-    <Card href={app.path} className="transition shadow-2xl">
+    <Card href={app.path} className="transition">
       <div className="flex gap-5">
         <div
           className={cn([

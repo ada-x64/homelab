@@ -36,7 +36,16 @@ export default function Login() {
 
   return (
     <>
-      <div className={cn(["flex", "max-w-md", "flex-col", "gap-4"])}>
+      <div
+        className={cn([
+          "flex",
+          "max-w-md",
+          "flex-col",
+          "gap-4",
+          "justify-center",
+          "h-lvh",
+        ])}
+      >
         <Card className={cn(["h-fit"])}>
           <h5>Sign In</h5>
           <div>

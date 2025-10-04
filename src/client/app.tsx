@@ -21,16 +21,7 @@ function Router({ config }: { config: Config }) {
     undefined,
   );
   return (
-    <div
-      className={cn([
-        "flex",
-        "justify-center",
-        "items-center",
-        "h-dvh",
-        "dark:bg-gray-900",
-        "dark:text-white",
-      ])}
-    >
+    <div className={cn(["flex", "justify-center", "items-center"])}>
       <ErrorBoundary
         onError={(error, info) => {
           setError([error, info]);

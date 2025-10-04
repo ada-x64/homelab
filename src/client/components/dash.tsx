@@ -1,30 +1,39 @@
 import cn from "../cn";
 /** @ts-ignore no types */
 import { type Config } from "../../types";
-import {
-  Card,
-  Navbar,
-  NavbarBrand,
-  NavbarCollapse,
-  NavbarLink,
-  NavbarToggle,
-} from "flowbite-react";
+import { Card, DarkThemeToggle, Navbar, NavbarBrand } from "flowbite-react";
 import _ from "lodash";
 import AppCard from "./app-card";
 import ServerCard from "./server-card";
+import { authClient } from "../auth";
 
 export default function Dash({ config }: { config: Config }) {
-  const signOut = () => {};
+  const signOut = async () => {
+    await authClient.signOut();
+  };
   return (
     <main className="flex flex-col h-full w-full">
-      <Navbar fluid rounded>
-        <NavbarBrand></NavbarBrand>
-        <NavbarToggle></NavbarToggle>
-        <NavbarCollapse>
-          <NavbarLink href="#" onClick={signOut}>
-            Sign Out
-          </NavbarLink>
-        </NavbarCollapse>
+      <Navbar>
+        <NavbarBrand>
+          <img
+            src="/public/brand.svg"
+            className="mr-3 h-6 sm:h-9 dark:invert"
+            alt="homelab"
+          ></img>
+          <span className="self-center whitespace no-wrap text-xl font-semibod dark:text-white">
+            homelab
+          </span>
+        </NavbarBrand>
+        <div className="flex gap-2 md:order-2 items-center">
+          <a
+            href="#"
+            onClick={signOut}
+            className="dark:text-gray-400 text-gray-500 text-sm hover:underline"
+          >
+            sign out
+          </a>
+          <DarkThemeToggle />
+        </div>
       </Navbar>
       <div
         className={cn([

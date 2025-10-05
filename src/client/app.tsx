@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from "react";
+import { createContext, Suspense, useEffect, useState } from "react";
 import Dash from "./components/dash";
 // @ts-expect-error No types available
 import { useRouteContext } from "@fastify/react/client";
@@ -10,7 +10,9 @@ import Login from "./components/login.js";
 import type { Config } from "../types.js";
 import { ErrorBoundary } from "react-error-boundary";
 import CodeBlock from "./components/code-block.js";
+import Layout from "./components/layout.js";
 
+export const ConfigCtx = createContext<Config | null>(null);
 export function createApp(ctx: { data: { config: Config } }, url: string) {
   return <Router config={ctx.data.config}></Router>;
 }
@@ -21,18 +23,20 @@ function Router({ config }: { config: Config }) {
     undefined,
   );
   return (
-    <div className={cn(["flex", "justify-center", "items-center"])}>
-      <ErrorBoundary
-        onError={(error, info) => {
-          setError([error, info]);
-        }}
-        fallback={<ErrorFallback error={errors} />}
-      >
-        <Suspense fallback={<Fallback />}>
-          {authData.data ? <Dash config={config} /> : <Login />}
-        </Suspense>
-      </ErrorBoundary>
-    </div>
+    <ConfigCtx value={config}>
+      <Layout>
+        <ErrorBoundary
+          onError={(error, info) => {
+            setError([error, info]);
+          }}
+          fallback={<ErrorFallback error={errors} />}
+        >
+          <Suspense fallback={<Fallback />}>
+            {authData.data ? <Dash /> : <Login />}
+          </Suspense>
+        </ErrorBoundary>
+      </Layout>
+    </ConfigCtx>
   );
 }
 

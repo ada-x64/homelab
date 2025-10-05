@@ -8,8 +8,10 @@ import {
 } from "../../types";
 import { Button, Card, Spinner } from "flowbite-react";
 import _ from "lodash";
-import { useEffect, useState, type Dispatch } from "react";
+import { useContext, useEffect, useState, type Dispatch } from "react";
 import ServerStats from "./server-stats";
+import { ConfigCtx } from "../app";
+import CodeBlock from "./code-block";
 
 export default function ServerCard({ server }: { server: Server }) {
   const [quicklook, setQuicklook] = useState<QuickLook | null>(null);
@@ -18,7 +20,14 @@ export default function ServerCard({ server }: { server: Server }) {
   const [system, setSystem] = useState<System | null>(null);
   const [failed, setFailed] = useState<boolean>(false);
   const [retry, setRetry] = useState<number>(0);
+  const [wol, setWol] = useState<number>(0);
+  const [wolStatus, setWolStatus] = useState<{
+    status: "ready" | "sending" | "failed" | "ok";
+    error?: string;
+  }>({ status: "ready" });
 
+  // TODO: This should be at a global level
+  // so it doesn't start over at rerender.
   useEffect(() => {
     console.log("polling...");
     const maxTries = 3;
@@ -26,6 +35,9 @@ export default function ServerCard({ server }: { server: Server }) {
     let interval: string | number | NodeJS.Timeout | undefined;
     const ping = async () => {
       try {
+        if (!interval) {
+          interval = setInterval(ping, 2000);
+        }
         console.log("ping");
         setFailed(false);
         const base = `http://${server.ip}:${server.status.apiPort}${server.status.apiRoute}`;
@@ -38,9 +50,6 @@ export default function ServerCard({ server }: { server: Server }) {
           const response = await fetch(base + endpoint);
           const body = await response.json();
           (setter as Dispatch<Object>)(body);
-        }
-        if (!interval) {
-          interval = setInterval(ping, 2000);
         }
       } catch {
         tries += 1;
@@ -67,6 +76,58 @@ export default function ServerCard({ server }: { server: Server }) {
       </div>
     );
   } else if (failed) {
+    let wolText;
+    switch (wolStatus.status) {
+      case "ready":
+        wolText = "Send Wake-On-LAN Request";
+        break;
+      case "ok":
+        wolText = "Sent!";
+        break;
+      case "failed":
+        wolText = "Failed!";
+        break;
+      case "sending":
+        wolText = <Spinner></Spinner>;
+    }
+    const error = wolStatus.error ? (
+      <CodeBlock text={wolStatus.error} language="text"></CodeBlock>
+    ) : (
+      <></>
+    );
+    const wol = server.wakeOnLan ? (
+      <>
+        <Button
+          color="alternative"
+          onClick={async () => {
+            try {
+              setWolStatus({ status: "sending" });
+              await fetch("/wake", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ server: server.name }),
+              });
+              setWolStatus({ status: "ok" });
+              setTimeout(() => {
+                setWolStatus({ status: "ready" });
+              }, 2000);
+            } catch (e: any) {
+              setWolStatus({ status: "failed", error: e.toString() });
+              setTimeout(() => {
+                setWolStatus({ status: "ready" });
+              }, 2000);
+            }
+          }}
+        >
+          {wolText}
+        </Button>
+        {error}
+      </>
+    ) : (
+      <></>
+    );
     content = (
       <>
         <div className="text-yellow-300 font-bold">Failed to fetch.</div>
@@ -78,10 +139,10 @@ export default function ServerCard({ server }: { server: Server }) {
         >
           Retry
         </Button>
+        {wol}
       </>
     );
   } else {
-    // temp
     content = (
       <ServerStats
         quicklook={quicklook!}
@@ -93,7 +154,7 @@ export default function ServerCard({ server }: { server: Server }) {
   }
 
   return (
-    <Card className="flex">
+    <Card className="flex w-full h-full md:px-16">
       <div className="text-sm font-semibold text-gray-500 dark:text-gray-200 flex items-center gap-2">
         <img
           src="/public/server.svg"

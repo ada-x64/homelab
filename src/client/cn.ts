@@ -10,3 +10,11 @@ export const formatPct = new Intl.NumberFormat("us-en", {
   style: "percent",
   minimumFractionDigits: 2,
 }).format;
+
+export function convertRemToPixels(rem: string | number) {
+  return (
+    // @ts-expect-error this actually works fine
+    parseFloat(rem) *
+    parseFloat(getComputedStyle(document.documentElement).fontSize)
+  );
+}

@@ -6,6 +6,8 @@ import { useRouteContext } from "@fastify/react/client";
 import { Card, Button, TextInput, Label, Spinner } from "flowbite-react";
 import cn from "../cn.js";
 import { authClient } from "../auth.js";
+import Navbar from "./navbar.js";
+import Layout from "./layout.js";
 
 export default function Login() {
   const [submitted, setSubmitted] = useState(false);
@@ -18,7 +20,7 @@ export default function Login() {
   const submit = async () => {
     setSubmitted(true);
     setLoading(true);
-    const res = await authClient.signIn.email({
+    await authClient.signIn.email({
       email: un,
       password: pw,
     });
@@ -35,69 +37,68 @@ export default function Login() {
   };
 
   return (
-    <>
-      <div
-        className={cn([
-          "flex",
-          "max-w-md",
-          "flex-col",
-          "gap-4",
-          "justify-center",
-          "h-lvh",
-        ])}
-      >
-        <Card className={cn(["h-fit"])}>
-          <h5>Sign In</h5>
-          <div>
-            <Label htmlFor="email" color={error || unErr ? "failure" : ""}>
-              Email
-            </Label>
-            <TextInput
-              placeholder={"example@email.com"}
-              color={error || unErr ? "failure" : ""}
-              disabled={loading}
-              required
-              id="email"
-              onKeyDown={onKeyDown}
-              onChange={(e) => {
-                try {
-                  const email = z.email().parse(e.target.value);
-                  setUn(email);
-                  setUnError(false);
-                } catch {
-                  setUnError(true);
-                }
-              }}
-            ></TextInput>
-          </div>
-          <div>
-            <Label htmlFor="email" color={error ? "failure" : ""}>
-              Password
-            </Label>
-            <TextInput
-              color={error ? "failure" : ""}
-              disabled={loading}
-              required
-              type="password"
-              id="password"
-              onKeyDown={onKeyDown}
-              onChange={(e) => setPw(e.target.value)}
-            ></TextInput>
-          </div>
-          {loading ? (
-            <Button disabled>
-              <Spinner size="sm" className="me-3" light></Spinner>
-            </Button>
-          ) : (
-            <Button
-              onClick={submit}
-              disabled={un.length == 0 || pw.length == 0 || loading || unErr}
-            >
-              Submit
-            </Button>
-          )}
-        </Card>
-      </div>
-    </>
+    <div
+      className={cn([
+        "flex",
+        "max-w-md",
+        "flex-col",
+        "gap-4",
+        "justify-center",
+        "h-full",
+        "flex-1",
+      ])}
+    >
+      <Card className={cn(["h-fit"])}>
+        <h5>Sign In</h5>
+        <div>
+          <Label htmlFor="email" color={error || unErr ? "failure" : ""}>
+            Email
+          </Label>
+          <TextInput
+            placeholder={"example@email.com"}
+            color={error || unErr ? "failure" : ""}
+            disabled={loading}
+            required
+            id="email"
+            onKeyDown={onKeyDown}
+            onChange={(e) => {
+              try {
+                const email = z.email().parse(e.target.value);
+                setUn(email);
+                setUnError(false);
+              } catch {
+                setUnError(true);
+              }
+            }}
+          ></TextInput>
+        </div>
+        <div>
+          <Label htmlFor="email" color={error ? "failure" : ""}>
+            Password
+          </Label>
+          <TextInput
+            color={error ? "failure" : ""}
+            disabled={loading}
+            required
+            type="password"
+            id="password"
+            onKeyDown={onKeyDown}
+            onChange={(e) => setPw(e.target.value)}
+          ></TextInput>
+        </div>
+        {loading ? (
+          <Button disabled>
+            <Spinner size="sm" className="me-3" light></Spinner>
+          </Button>
+        ) : (
+          <Button
+            onClick={submit}
+            disabled={un.length == 0 || pw.length == 0 || loading || unErr}
+          >
+            Submit
+          </Button>
+        )}
+      </Card>
+    </div>
   );
 }

@@ -28,7 +28,7 @@ export default function ServerStats({
   uptime: Uptime;
 }) {
   return (
-    <Accordion>
+    <Accordion className="overflow-scroll">
       <AccordionPanel>
         <AccordionTitle className={cn(["text-sm", "p-2"])}>
           Server Stats
@@ -66,11 +66,6 @@ export default function ServerStats({
       </AccordionPanel>
     </Accordion>
   );
-  return (
-    <div className={cn(["mb-4"])}>
-      <Containers values={containers}></Containers>
-    </div>
-  );
 }
 
 function AllStats({
@@ -86,10 +81,14 @@ function AllStats({
 }) {
   const cpu_usage = quicklook.percpu.map((cpu) => {
     return (
-      <li className="bg-black  flex-1 h-4">
+      <li className="bg-black/25 flex-1" style={{ height: "100px" }}>
         <div
-          className="bg-red-500 w-full h-full"
-          style={{ height: formatPct(cpu.total / 100) }}
+          className="w-full"
+          style={{
+            height: `${cpu.total}px`,
+            backgroundColor: `hsl(${(255 * cpu.cpu_number) / quicklook.percpu.length}, 75%, 50%)`,
+            transform: `translateY(${100 - cpu.total}px) scaleY(-1)`,
+          }}
         ></div>
       </li>
     );

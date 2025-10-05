@@ -1,70 +1,103 @@
-import cn from "../cn";
+import cn, { convertRemToPixels as rem2Px } from "../cn";
 /** @ts-ignore no types */
 import { type Config } from "../../types";
-import { Card, DarkThemeToggle, Navbar, NavbarBrand } from "flowbite-react";
+import { Button, Card, Carousel, Footer, Pagination } from "flowbite-react";
 import _ from "lodash";
 import AppCard from "./app-card";
 import ServerCard from "./server-card";
-import { authClient } from "../auth";
+import { useContext, useLayoutEffect, useState } from "react";
+import { ConfigCtx } from "../app";
 
-export default function Dash({ config }: { config: Config }) {
-  const signOut = async () => {
-    await authClient.signOut();
+export default function Dash() {
+  const config = useContext(ConfigCtx)!;
+  const [page, setPage] = useState(1);
+  const onPageChange = (page: number) => {
+    setPage(page);
   };
+
   return (
-    <main className="flex flex-col h-full w-full">
-      <Navbar>
-        <NavbarBrand>
-          <img
-            src="/public/brand.svg"
-            className="mr-3 h-6 sm:h-9 dark:invert"
-            alt="homelab"
-          ></img>
-          <span className="self-center whitespace no-wrap text-xl font-semibod dark:text-white">
-            homelab
-          </span>
-        </NavbarBrand>
-        <div className="flex gap-2 md:order-2 items-center">
-          <a
-            href="#"
-            onClick={signOut}
-            className="dark:text-gray-400 text-gray-500 text-sm hover:underline"
-          >
-            sign out
-          </a>
-          <DarkThemeToggle />
+    <div
+      className={cn([
+        "h-full",
+        "flex",
+        "flex-col",
+        "justify-between",
+        "items-center",
+        "flex-1",
+      ])}
+    >
+      <div className="flex flex-1 items-center justify-center gap-10">
+        <div
+          className={cn([
+            "m-auto",
+            page == 1 ? "flex" : "hidden",
+            "lg:min-w-md",
+            "max-w-fit",
+            "grow-0",
+            "self-center",
+            "gap-5",
+            "lg:flex",
+            "flex-col",
+            "flex-1",
+          ])}
+        >
+          {config.apps.map((app) => (
+            <AppCard
+              key={crypto.randomUUID()}
+              app={app}
+              servers={config.servers}
+            />
+          ))}
         </div>
-      </Navbar>
-      <div
-        className={cn([
-          "grid",
-          "grid-cols-2",
-          "gap-10",
-          "m-5",
-          "justify-around",
-        ])}
-      >
-        <div className="flex flex-col justify-center h-full">
-          <Card
-            className={cn(["min-w-md", "max-w-fit", "grow-0", "self-center"])}
+        <div
+          className={cn([
+            page == 2 ? "flex" : "hidden",
+            "lg:flex",
+            "justify-center",
+            "items-center",
+            "flex-col",
+            "m-4",
+            "max-h-3/4",
+            "max-w-3/4",
+            "lg:max-w-1/2",
+            "flex-1",
+          ])}
+        >
+          <Carousel
+            pauseOnHover
+            theme={{
+              control: {
+                base: "bg-black/30 group-hover:bg-black/50 dark:bg-white/30 dark:group-hover:bg-white/50",
+              },
+              indicators: {
+                active: {
+                  off: "bg-black/50 hover:bg-black/75 dark:bg-white/50 dark:hover:bg-white/75",
+                  on: "bg-black dark:bg-white",
+                },
+              },
+            }}
           >
-            {config.apps.map((app) => (
-              <AppCard
-                key={crypto.randomUUID()}
-                app={app}
-                servers={config.servers}
-              />
-            ))}
-          </Card>
-        </div>
-        <div className="flex flex-col justify-center">
-          <Card className="max-h-fit flex-1">
             {config.servers.map((server) => (
               <ServerCard key={crypto.randomUUID()} server={server} />
             ))}
-          </Card>
+          </Carousel>
         </div>
       </div>
-    </main>
+      <Footer
+        className="flex justify-center p-4 lg:hidden"
+        theme={{ root: { base: "rounded-none" } }}
+      >
+        <Pagination
+          className="flex-1"
+          layout="navigation"
+          currentPage={page}
+          totalPages={2}
+          onPageChange={onPageChange}
+          showIcons
+          nextLabel={"Stats"}
+          previousLabel={"Apps"}
+        />
+      </Footer>
+    </div>
   );
 }

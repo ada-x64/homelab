@@ -13,7 +13,7 @@ export default function AppIcon({
   servers: Server[];
   className?: string;
 }) {
-  const src = app.icon ? `/assets/${app.icon}` : `/public/no-image.svg`;
+  const src = app.icon ? `/config/${app.icon}` : `/no-image.svg`;
   const invert = app.icon ? "" : "dark:invert";
   return (
     <Card href={app.path} className={cn(["hover:transition", className ?? ""])}>

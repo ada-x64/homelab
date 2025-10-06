@@ -97,14 +97,14 @@ function AllStats({
 
   let system_svg;
   if (system?.os_name.includes("windows")) {
-    system_svg = "/public/windows.svg";
+    system_svg = "/windows.svg";
   } else if (
     system?.os_name.includes("mac") ||
     system?.os_name.includes("apple")
   ) {
-    system_svg = "/public/macos.svg";
+    system_svg = "/macos.svg";
   } else {
-    system_svg = "/public/linux.svg";
+    system_svg = "/linux.svg";
   }
   const stats = [
     {
@@ -113,12 +113,12 @@ function AllStats({
       img: system_svg,
     },
     {
-      img: "/public/ram.svg",
+      img: "/ram.svg",
       name: "RAM",
       value: formatPct(quicklook.mem / 100),
     },
-    { img: "/public/uptime.svg", name: "Uptime", value: uptime },
-    { name: "CPU", value: quicklook.cpu_name, img: "/public/cpu.svg" },
+    { img: "/uptime.svg", name: "Uptime", value: uptime },
+    { name: "CPU", value: quicklook.cpu_name, img: "/cpu.svg" },
   ];
   return (
     <Stats values={stats}>
@@ -176,33 +176,33 @@ function Containers({ values }: { values: Container[] }) {
       const stats = [
         {
           name: "Container",
-          img: "/public/container.svg",
+          img: "/container.svg",
           value: container.name,
         },
         {
           name: "Image",
           value: container.image.toString(),
-          img: "/public/image.svg",
+          img: "/image.svg",
         },
         {
           name: "Status",
           value: container.status,
-          img: "/public/status.svg",
+          img: "/status.svg",
         },
         {
           name: "CPU",
           value: formatPct(container.cpu.total),
-          img: "/public/cpu.svg",
+          img: "/cpu.svg",
         },
         {
           name: "RAM",
           value: formatPct(container.memory_usage / container.memory_limit),
-          img: "/public/ram.svg",
+          img: "/ram.svg",
         },
         {
           name: "Uptime",
           value: container.uptime,
-          img: "/public/uptime.svg",
+          img: "/uptime.svg",
         },
       ];
       return <Stats values={stats}></Stats>;

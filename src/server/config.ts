@@ -1,4 +1,4 @@
-// This works by using a reverse proxy given the config at assets/config.json.
+// This works by using a reverse proxy given the config at config/config.json.
 import _ from "lodash";
 
 import type { FastifyPluginAsync } from "fastify";
@@ -12,7 +12,7 @@ export let config: Config | undefined;
 
 const plugin: FastifyPluginAsync = async (server) => {
   try {
-    let raw = await readFile("assets/config.json", { encoding: "utf8" });
+    let raw = await readFile("config/config.json", { encoding: "utf8" });
     raw = JSON.parse(raw.toString());
     config = ConfigSchema.parse(raw);
     server.log.info("Successfully parsed config file.");
@@ -23,7 +23,7 @@ const plugin: FastifyPluginAsync = async (server) => {
       server.log.error(e);
     }
     server.log.error(
-      "Please specify a valid configuration file at assets/config.json. For more information, see the README.",
+      "Please specify a valid configuration file at config/config.json. For more information, see the README.",
     );
     throw new Error();
   }

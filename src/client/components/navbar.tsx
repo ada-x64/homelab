@@ -9,7 +9,7 @@ export default function () {
     <Navbar className="mb-4">
       <NavbarBrand>
         <img
-          src="/public/brand.svg"
+          src="/brand.svg"
           className="mr-3 h-6 sm:h-9 dark:invert"
           alt="homelab"
         ></img>

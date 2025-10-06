@@ -22,6 +22,6 @@
     "target": "ESNext",
     "verbatimModuleSyntax": true
   },
-  "include": ["src"],
+  "include": ["src", "src/server/**/*"],
   "exclude": ["src/client/**/*", "src/**/*.test.ts"]
 }

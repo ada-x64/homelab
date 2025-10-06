@@ -155,7 +155,7 @@ export default function ServerCard({ server }: { server: Server }) {
     <Card className="flex w-full md:px-16 bg-transparent">
       <div className="text-sm font-semibold text-gray-500 dark:text-gray-200 flex items-center gap-2">
         <img
-          src="/public/server.svg"
+          src="/server.svg"
           className="size-4 dark:invert dark:brightness-25"
         />
         {server.name}

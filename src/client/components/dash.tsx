@@ -5,7 +5,12 @@ import { Button, Card, Carousel, Footer, Pagination } from "flowbite-react";
 import _ from "lodash";
 import AppCard from "./app-card";
 import ServerCard from "./server-card";
-import { useContext, useLayoutEffect, useState } from "react";
+import {
+  useContext,
+  useLayoutEffect,
+  useState,
+  type PropsWithChildren,
+} from "react";
 import { ConfigCtx } from "../app";
 
 export default function Dash() {
@@ -16,9 +21,11 @@ export default function Dash() {
   };
 
   return (
+    // page container
     <div
       className={cn([
         "h-full",
+        "w-full",
         "flex",
         "flex-col",
         "justify-between",
@@ -26,78 +33,103 @@ export default function Dash() {
         "flex-1",
       ])}
     >
-      <div className="flex flex-1 items-center justify-center gap-10">
-        <div
-          className={cn([
-            "m-auto",
-            page == 1 ? "flex" : "hidden",
-            "lg:min-w-md",
-            "max-w-fit",
-            "grow-0",
-            "self-center",
-            "gap-5",
-            "lg:flex",
-            "flex-col",
-            "flex-1",
-          ])}
-        >
+      {/* main body */}
+      <div
+        className={cn([
+          "flex-1",
+          "items-center",
+          "justify-center",
+          "gap-10",
+          "w-full",
+          "p-4",
+          "lg:px-10",
+          "lg:grid-cols-2",
+          "lg:grid",
+        ])}
+      >
+        <Section page={1} currentPage={page}>
           {config.apps.map((app) => (
             <AppCard
               key={crypto.randomUUID()}
               app={app}
               servers={config.servers}
+              className={cn(["w-full", "lg:max-w-1/2"])}
             />
           ))}
-        </div>
-        <div
-          className={cn([
-            page == 2 ? "flex" : "hidden",
-            "lg:flex",
-            "justify-center",
-            "items-center",
-            "flex-col",
-            "m-4",
-            "max-h-3/4",
-            "max-w-3/4",
-            "lg:max-w-1/2",
-            "flex-1",
-          ])}
-        >
-          <Carousel
-            pauseOnHover
-            theme={{
-              control: {
-                base: "bg-black/30 group-hover:bg-black/50 dark:bg-white/30 dark:group-hover:bg-white/50",
-              },
-              indicators: {
-                active: {
-                  off: "bg-black/50 hover:bg-black/75 dark:bg-white/50 dark:hover:bg-white/75",
-                  on: "bg-black dark:bg-white",
-                },
-              },
-            }}
-          >
-            {config.servers.map((server) => (
-              <ServerCard key={crypto.randomUUID()} server={server} />
-            ))}
-          </Carousel>
-        </div>
+        </Section>
+
+        <Section page={2} currentPage={page} className={"h-full"}>
+          <ServerWrapper />
+        </Section>
       </div>
+
+      {/* footer */}
       <Footer
-        className="flex justify-center p-4 lg:hidden"
+        className="flex justify-center items-center p-4 lg:hidden"
         theme={{ root: { base: "rounded-none" } }}
       >
         <Pagination
-          className="flex-1"
           layout="navigation"
           currentPage={page}
           totalPages={2}
           onPageChange={onPageChange}
-          showIcons
           nextLabel={"Stats"}
           previousLabel={"Apps"}
         />
       </Footer>
+    </div>
+  );
+}
+
+function Section({
+  page,
+  currentPage,
+  children,
+  className,
+}: PropsWithChildren & {
+  page: number;
+  currentPage: number;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn([
+        className ?? "",
+        currentPage == page ? "flex" : "hidden",
+        "flex-1",
+        "flex-col",
+        "justify-center",
+        "items-center",
+        "gap-5",
+        "lg:flex",
+        `lg:col-${page}`,
+        "lg:w-full",
+      ])}
+    >
+      {children}
+    </div>
+  );
+}
+
+function ServerWrapper() {
+  const config = useContext(ConfigCtx);
+  const [serverPage, setServerPage] = useState(1);
+  const onChangeServerPage = (page: number) => {
+    setServerPage(page);
+  };
+
+  const serverCards = config!.servers.map((server) => (
+    <ServerCard key={crypto.randomUUID()} server={server} />
+  ));
+  return (
+    <div className={cn(["w-full", "flex", "flex-col"])}>
+      {serverCards[serverPage - 1]}
+      <Pagination
+        className={"self-center"}
+        totalPages={serverCards.length}
+        currentPage={serverPage}
+        onPageChange={onChangeServerPage}
+      ></Pagination>
     </div>
   );
 }

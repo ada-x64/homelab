@@ -8,9 +8,8 @@ import {
 } from "../../types";
 import { Button, Card, Spinner } from "flowbite-react";
 import _ from "lodash";
-import { useContext, useEffect, useState, type Dispatch } from "react";
+import { useEffect, useState, type Dispatch } from "react";
 import ServerStats from "./server-stats";
-import { ConfigCtx } from "../app";
 import CodeBlock from "./code-block";
 
 export default function ServerCard({ server }: { server: Server }) {
@@ -20,7 +19,6 @@ export default function ServerCard({ server }: { server: Server }) {
   const [system, setSystem] = useState<System | null>(null);
   const [failed, setFailed] = useState<boolean>(false);
   const [retry, setRetry] = useState<number>(0);
-  const [wol, setWol] = useState<number>(0);
   const [wolStatus, setWolStatus] = useState<{
     status: "ready" | "sending" | "failed" | "ok";
     error?: string;
@@ -154,7 +152,7 @@ export default function ServerCard({ server }: { server: Server }) {
   }
 
   return (
-    <Card className="flex w-full h-full md:px-16">
+    <Card className="flex w-full md:px-16 bg-transparent">
       <div className="text-sm font-semibold text-gray-500 dark:text-gray-200 flex items-center gap-2">
         <img
           src="/public/server.svg"

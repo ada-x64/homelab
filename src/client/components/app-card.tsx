@@ -7,14 +7,16 @@ import _ from "lodash";
 export default function AppIcon({
   app,
   servers,
+  className,
 }: {
   app: App;
   servers: Server[];
+  className?: string;
 }) {
   const src = app.icon ? `/assets/${app.icon}` : `/public/no-image.svg`;
   const invert = app.icon ? "" : "dark:invert";
   return (
-    <Card href={app.path} className="transition">
+    <Card href={app.path} className={cn(["hover:transition", className ?? ""])}>
       <div className="flex gap-5">
         <div
           className={cn([

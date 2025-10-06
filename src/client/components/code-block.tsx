@@ -2,13 +2,17 @@ import { ClipboardWithIconText, HR } from "flowbite-react";
 import cn from "../cn";
 
 export default function ({
-  className,
   language,
   text,
+  theme,
 }: {
-  className?: string;
   language?: string;
   text: string;
+  theme?: Partial<{
+    root: string;
+    title: { root: string; language: string };
+    block: string;
+  }>;
 }) {
   return (
     <div
@@ -20,6 +24,7 @@ export default function ({
         "p-4",
         "rounded-md",
         "shadow-lg",
+        theme?.root ?? "",
       ])}
     >
       <div
@@ -29,6 +34,7 @@ export default function ({
           "items-center",
           "px-4",
           "rounded-t-lg",
+          theme?.title?.root ?? "",
         ])}
       >
         <span
@@ -37,6 +43,7 @@ export default function ({
             "py-0.5",
             "font-semibold",
             "text-gray-400",
+            theme?.title?.language ?? "",
           ])}
         >
           {language}
@@ -49,10 +56,10 @@ export default function ({
       <HR theme={{ base: "my-2" }}></HR>
       <pre
         className={cn([
-          className ?? "",
           "text-sm",
           "text-white",
           "overflow-x-auto",
+          theme?.block ?? "",
         ])}
       >
         <code className="block">{text}</code>

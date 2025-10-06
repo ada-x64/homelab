@@ -28,12 +28,12 @@ export default function ServerStats({
   uptime: Uptime;
 }) {
   return (
-    <Accordion className="overflow-scroll">
+    <Accordion>
       <AccordionPanel>
         <AccordionTitle className={cn(["text-sm", "p-2"])}>
           Server Stats
         </AccordionTitle>
-        <AccordionContent>
+        <AccordionContent className="overflow-auto max-h-48">
           <AllStats
             quicklook={quicklook}
             containers={containers}
@@ -46,16 +46,16 @@ export default function ServerStats({
         <AccordionTitle className={cn(["text-sm", "p-2"])}>
           Containers
         </AccordionTitle>
-        <AccordionContent>
+        <AccordionContent className="overflow-auto max-h-48">
           <Containers values={containers}></Containers>
         </AccordionContent>
       </AccordionPanel>
       <AccordionPanel>
         <AccordionTitle className={cn(["text-sm", "p-2"])}>Raw</AccordionTitle>
-        <AccordionContent>
+        <AccordionContent className="overflow-auto max-h-48">
           <CodeBlock
             language="json"
-            className="max-h-52 overflow-auto"
+            theme={{ root: "max-h-48 p-0", block: "max-h-24 overflow-auto" }}
             text={
               JSON.stringify(quicklook, undefined, 2) +
               "\n" +
@@ -81,13 +81,13 @@ function AllStats({
 }) {
   const cpu_usage = quicklook.percpu.map((cpu) => {
     return (
-      <li className="bg-black/25 flex-1" style={{ height: "100px" }}>
+      <li className="bg-black/25 flex-1" style={{ height: "50px" }}>
         <div
           className="w-full"
           style={{
-            height: `${cpu.total}px`,
+            height: `${cpu.total / 2}px`,
             backgroundColor: `hsl(${(255 * cpu.cpu_number) / quicklook.percpu.length}, 75%, 50%)`,
-            transform: `translateY(${100 - cpu.total}px) scaleY(-1)`,
+            transform: `translateY(${(100 - cpu.total) / 2}px) scaleY(-1)`,
           }}
         ></div>
       </li>

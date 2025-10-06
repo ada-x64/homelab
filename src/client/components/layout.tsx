@@ -5,7 +5,7 @@ export default function ({ children }: PropsWithChildren) {
   return (
     <>
       <Navbar />
-      <main className="flex flex-col w-full h-lvh overflow-hidden">
+      <main className="flex-1 flex flex-col justify-center items-center">
         {children}
       </main>
     </>

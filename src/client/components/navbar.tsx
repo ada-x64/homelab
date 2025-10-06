@@ -6,7 +6,7 @@ export default function () {
     await authClient.signOut();
   };
   return (
-    <Navbar className="absolute top-0 w-full">
+    <Navbar className="mb-4">
       <NavbarBrand>
         <img
           src="/public/brand.svg"

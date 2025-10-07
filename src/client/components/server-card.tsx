@@ -38,7 +38,7 @@ export default function ServerCard({ server }: { server: Server }) {
         }
         console.log("ping");
         setFailed(false);
-        const base = `http://${server.ip}:${server.status.apiPort}${server.status.apiRoute}`;
+        const base = `/status/${server.name.replaceAll(/\s/g, "-")}`;
         for (const [endpoint, setter] of [
           ["/quicklook", setQuicklook],
           ["/containers", setContainers],
@@ -47,6 +47,9 @@ export default function ServerCard({ server }: { server: Server }) {
         ]) {
           const response = await fetch(base + endpoint);
           const body = await response.json();
+          if (body.error) {
+            throw body.error;
+          }
           (setter as Dispatch<object>)(body);
         }
       } catch {

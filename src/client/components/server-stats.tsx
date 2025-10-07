@@ -181,8 +181,8 @@ function Containers({
   server: Server;
   values: Container[];
 }) {
-  const containers = values
-    ?.map((container) => {
+  const containers = (values ?? [])
+    .map((container) => {
       const stats = [
         {
           name: "Container",

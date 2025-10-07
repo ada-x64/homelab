@@ -29,14 +29,24 @@ const plugin: FastifyPluginAsync = async (server) => {
   }
 
   server.decorate("config", config);
-
   const serverMap = _.keyBy(config.servers, "name");
+
+  // apps
   for (const app of config.apps) {
     const ip = serverMap[app.host].ip;
     server.register(proxy, {
       upstream: `http://${ip}:${app.port}`,
       prefix: app.path,
       rewritePrefix: app.hostPath,
+    });
+  }
+
+  // status
+  for (const cserver of config.servers) {
+    server.register(proxy, {
+      upstream: `http://${cserver.ip}:${cserver.status.apiPort}`,
+      prefix: `status/${cserver.name.replaceAll(/\s/g, "-")}`,
+      rewritePrefix: cserver.status.apiRoute,
     });
   }
 };

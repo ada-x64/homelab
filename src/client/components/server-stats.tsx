@@ -16,19 +16,14 @@ import {
 } from "flowbite-react";
 import CodeBlock from "./code-block";
 import _ from "lodash";
+import type { ServerStatus } from "../status";
 
 export default function ServerStats({
   server,
-  quicklook,
-  containers,
-  system,
-  uptime,
+  stats: { quicklook, containers, system, uptime },
 }: {
   server: Server;
-  quicklook: QuickLook;
-  containers: Container[];
-  system: System;
-  uptime: Uptime;
+  stats: ServerStatus;
 }) {
   return (
     <Accordion>
@@ -179,7 +174,7 @@ function Containers({
   values,
 }: {
   server: Server;
-  values: Container[];
+  values?: Container[];
 }) {
   const containers = (values ?? [])
     .map((container) => {

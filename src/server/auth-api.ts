@@ -20,6 +20,7 @@ const plugin: FastifyPluginCallback = (server) => {
         const req = new Request(url.toString(), {
           method: request.method,
           headers,
+          // eslint-disable-next-line no-invalid-fetch-options
           body: request.body ? JSON.stringify(request.body) : undefined,
         });
         // Process authentication request

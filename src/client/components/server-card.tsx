@@ -1,134 +1,26 @@
-/** @ts-ignore no types */
-import {
-  type Server,
-  type QuickLook,
-  type Uptime,
-  type System,
-  type Container,
-} from "../../types";
+import { type Server } from "../../types";
 import { Button, Card, Spinner } from "flowbite-react";
 import _ from "lodash";
-import { useEffect, useState, type Dispatch } from "react";
+import { useContext, useState } from "react";
 import ServerStats from "./server-stats";
 import CodeBlock from "./code-block";
+import { StatusCtx } from "../status";
 
 export default function ServerCard({ server }: { server: Server }) {
-  const [quicklook, setQuicklook] = useState<QuickLook | null>(null);
-  const [containers, setContainers] = useState<Container[] | null>(null);
-  const [uptime, setUptime] = useState<Uptime | null>(null);
-  const [system, setSystem] = useState<System | null>(null);
-  const [failed, setFailed] = useState<boolean>(false);
-  const [retry, setRetry] = useState<number>(0);
-  const [wolStatus, setWolStatus] = useState<{
-    status: "ready" | "sending" | "failed" | "ok";
-    error?: string;
-  }>({ status: "ready" });
+  const allStats = useContext(StatusCtx);
+  const stats = allStats[server.name];
 
-  // TODO: This should be at a global level
-  // so it doesn't start over at rerender.
-  useEffect(() => {
-    console.log("polling...");
-    const maxTries = 3;
-    let tries = 0;
-    let interval: string | number | NodeJS.Timeout | undefined;
-    const ping = async () => {
-      try {
-        if (!interval) {
-          interval = setInterval(ping, 2000);
-        }
-        console.log("ping");
-        setFailed(false);
-        const base = `/status/${server.name.replaceAll(/\s/g, "-")}`;
-        for (const [endpoint, setter] of [
-          ["/quicklook", setQuicklook],
-          ["/containers", setContainers],
-          ["/uptime", setUptime],
-          ["/system", setSystem],
-        ]) {
-          const response = await fetch(base + endpoint);
-          const body = await response.json();
-          if (body.error) {
-            throw body.error;
-          }
-          (setter as Dispatch<object>)(body);
-        }
-      } catch {
-        tries += 1;
-        if (tries > maxTries) {
-          setFailed(true);
-          console.info(
-            `Failed to fetch stats for ${server.ip}. Clearing interval.`,
-          );
-          setQuicklook(null);
-          setContainers(null);
-          clearInterval(interval);
-        }
-      }
-    };
-    ping();
-    return () => clearInterval(interval);
-  }, [retry]);
+  const [retry, setRetry] = useState<number>(0);
 
   let content;
-  if (!failed && quicklook == null && containers == null) {
+  if (!stats.failed && stats.quicklook == null && stats.containers == null) {
     content = (
-      <div className="flex flex-1 justify-center">
+      <div className="flex flex-1 justify-center flex-col items-center gap-5">
         <Spinner size="lg"></Spinner>
+        {server.wakeOnLan ? <WolButton server={server} /> : <></>}
       </div>
     );
-  } else if (failed) {
-    let wolText;
-    switch (wolStatus.status) {
-      case "ready":
-        wolText = "Send Wake-On-LAN Request";
-        break;
-      case "ok":
-        wolText = "Sent!";
-        break;
-      case "failed":
-        wolText = "Failed!";
-        break;
-      case "sending":
-        wolText = <Spinner></Spinner>;
-    }
-    const error = wolStatus.error ? (
-      <CodeBlock text={wolStatus.error} language="text"></CodeBlock>
-    ) : (
-      <></>
-    );
-    const wol = server.wakeOnLan ? (
-      <>
-        <Button
-          color="alternative"
-          onClick={async () => {
-            try {
-              setWolStatus({ status: "sending" });
-              await fetch("/wake", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ server: server.name }),
-              });
-              setWolStatus({ status: "ok" });
-              setTimeout(() => {
-                setWolStatus({ status: "ready" });
-              }, 2000);
-            } catch (e: any) {
-              setWolStatus({ status: "failed", error: e.toString() });
-              setTimeout(() => {
-                setWolStatus({ status: "ready" });
-              }, 2000);
-            }
-          }}
-        >
-          {wolText}
-        </Button>
-        {error}
-      </>
-    ) : (
-      <></>
-    );
+  } else if (stats.failed) {
     content = (
       <>
         <div className="text-yellow-300 font-bold">Failed to fetch.</div>
@@ -140,19 +32,11 @@ export default function ServerCard({ server }: { server: Server }) {
         >
           Retry
         </Button>
-        {wol}
+        {server.wakeOnLan ? <WolButton server={server} /> : <></>}
       </>
     );
   } else {
-    content = (
-      <ServerStats
-        server={server}
-        quicklook={quicklook!}
-        containers={containers!}
-        uptime={uptime!}
-        system={system!}
-      ></ServerStats>
-    );
+    content = <ServerStats server={server} stats={stats}></ServerStats>;
   }
 
   return (
@@ -166,5 +50,64 @@ export default function ServerCard({ server }: { server: Server }) {
       </div>
       {content}
     </Card>
+  );
+}
+
+function WolButton({ server }: { server: Server }) {
+  const [wolStatus, setWolStatus] = useState<{
+    status: "ready" | "sending" | "failed" | "ok";
+    error?: string;
+  }>({ status: "ready" });
+
+  let wolText;
+  switch (wolStatus.status) {
+    case "ready":
+      wolText = "Send Wake-On-LAN Request";
+      break;
+    case "ok":
+      wolText = "Sent!";
+      break;
+    case "failed":
+      wolText = "Failed!";
+      break;
+    case "sending":
+      wolText = <Spinner></Spinner>;
+  }
+  const error = wolStatus.error ? (
+    <CodeBlock text={wolStatus.error} language="text"></CodeBlock>
+  ) : (
+    <></>
+  );
+
+  return (
+    <>
+      <Button
+        color="alternative"
+        onClick={async () => {
+          try {
+            setWolStatus({ status: "sending" });
+            await fetch("/wake", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ server: server.name }),
+            });
+            setWolStatus({ status: "ok" });
+            setTimeout(() => {
+              setWolStatus({ status: "ready" });
+            }, 2000);
+          } catch (e: any) {
+            setWolStatus({ status: "failed", error: e.toString() });
+            setTimeout(() => {
+              setWolStatus({ status: "ready" });
+            }, 2000);
+          }
+        }}
+      >
+        {wolText}
+      </Button>
+      {error}
+    </>
   );
 }

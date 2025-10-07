@@ -1,18 +1,28 @@
-/** @ts-ignore no types */
 import { Footer, Pagination } from "flowbite-react";
 import _ from "lodash";
 import AppCard from "./app-card";
 import ServerCard from "./server-card";
-import { useContext, useState, type PropsWithChildren } from "react";
+import { useContext, useMemo, useState, type PropsWithChildren } from "react";
 import { ConfigCtx } from "../app";
 import cn from "../cn";
+import { pingServer, setupPing, StatusCtx } from "../status";
 
 export default function Dash() {
   const config = useContext(ConfigCtx)!;
+  const allStats = useContext(StatusCtx);
+
   const [page, setPage] = useState(1);
   const onPageChange = (page: number) => {
     setPage(page);
   };
+
+  // set up ping
+  useMemo(() => {
+    setupPing(config, allStats);
+    for (const server of config.servers) {
+      pingServer(server, allStats[server.name]);
+    }
+  }, []);
 
   return (
     // page container

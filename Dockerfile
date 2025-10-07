@@ -1,9 +1,3 @@
-# TODO
-# Will need to install pnpm
-# Need to generate an auth secret in .env
-# Need to initialize sqlite?
-#
-
 FROM node:22-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"

@@ -1,7 +1,0 @@
-services:
-  homelab:
-    build: .
-    network_mode: "host"
-    environment:
-      - "ADMIN_EMAIL=test@foo.com"
-      - "ADMIN_PW=1234abc!!!"

@@ -1,0 +1,21 @@
+{
+  "apps": [
+    {
+      "name": "My App",
+      "host": "Home Server",
+      "port": 8080,
+      "path": "/dashboard",
+      "hostPath": "/app",
+      "icon": "jellyfin.svg"
+    }
+  ],
+  "servers": [
+    {
+      "name": "Home Server",
+      "ip": "192.168.1.50",
+      "wakeOnLan": {
+        "macAddress": "aa:bb:cc:dd:ee:ff"
+      }
+    }
+  ]
+}

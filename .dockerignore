@@ -1,5 +1,8 @@
-node_modules
 .git
+.env
 .gitignore
 *.md
-dist
+sqlite*.*
+node_modules/
+dist/
+.flowbite-react/

@@ -22,5 +22,6 @@ RUN pnpm run build
 FROM base
 COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=build /app/dist /app/dist
+RUN echo "BETTER_AUTH_SECRET=$(node -p \"require\('crypto'\).randomBytes\(32\).toString\('hex'\)\")" > .env
 EXPOSE 3000
 CMD [ "pnpm", "start" ]

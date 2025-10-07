@@ -49,4 +49,4 @@ await server.register(FastifyStatic, {
 });
 
 const port = process.env.PORT ? +process.env.PORT : 3000;
-await server.listen({ port });
+await server.listen({ host: "0.0.0.0", port });

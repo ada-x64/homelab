@@ -6,4 +6,4 @@ sqlite*.*
 node_modules/
 dist/
 .flowbite-react/
-config.example/
+example/

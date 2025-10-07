@@ -4,6 +4,7 @@ import {
   type Container,
   type System,
   type Uptime,
+  type Server,
 } from "../../types";
 import cn, { formatPct } from "../cn";
 import {
@@ -17,11 +18,13 @@ import CodeBlock from "./code-block";
 import _ from "lodash";
 
 export default function ServerStats({
+  server,
   quicklook,
   containers,
   system,
   uptime,
 }: {
+  server: Server;
   quicklook: QuickLook;
   containers: Container[];
   system: System;
@@ -36,7 +39,6 @@ export default function ServerStats({
         <AccordionContent className="overflow-auto max-h-48">
           <AllStats
             quicklook={quicklook}
-            containers={containers}
             system={system}
             uptime={uptime}
           ></AllStats>
@@ -47,7 +49,7 @@ export default function ServerStats({
           Containers
         </AccordionTitle>
         <AccordionContent className="overflow-auto max-h-48">
-          <Containers values={containers}></Containers>
+          <Containers server={server} values={containers}></Containers>
         </AccordionContent>
       </AccordionPanel>
       <AccordionPanel>
@@ -70,18 +72,20 @@ export default function ServerStats({
 
 function AllStats({
   quicklook,
-  containers,
   system,
   uptime,
 }: {
   quicklook: QuickLook;
-  containers: Container[];
   system: System;
   uptime: Uptime;
 }) {
   const cpu_usage = quicklook.percpu.map((cpu) => {
     return (
-      <li className="bg-black/25 flex-1" style={{ height: "50px" }}>
+      <li
+        key={quicklook.cpu_name + "-" + cpu.cpu_number}
+        className="bg-black/25 flex-1"
+        style={{ height: "50px" }}
+      >
         <div
           className="w-full"
           style={{
@@ -170,7 +174,13 @@ function Stats({
   );
 }
 
-function Containers({ values }: { values: Container[] }) {
+function Containers({
+  server,
+  values,
+}: {
+  server: Server;
+  values: Container[];
+}) {
   const containers = values
     ?.map((container) => {
       const stats = [
@@ -205,9 +215,11 @@ function Containers({ values }: { values: Container[] }) {
           img: "/uptime.svg",
         },
       ];
-      return <Stats values={stats}></Stats>;
+      return (
+        <Stats key={server.name + "-" + container.name} values={stats}></Stats>
+      );
     })
-    .flatMap((e) => [<HR className="my-2" />, e])
+    .flatMap((e) => [<HR key={e.key} className="my-2" />, e])
     .slice(1);
   return <div className="gap-0.5 flex flex-col">{containers}</div>;
 }

@@ -1,16 +1,13 @@
 import cn from "../cn";
-/** @ts-ignore no types */
-import { type App, type Server } from "../../types";
+import { type App } from "../../types";
 import { Card } from "flowbite-react";
 import _ from "lodash";
 
 export default function AppIcon({
   app,
-  servers,
   className,
 }: {
   app: App;
-  servers: Server[];
   className?: string;
 }) {
   const src = app.icon ? `/config/${app.icon}` : `/no-image.svg`;

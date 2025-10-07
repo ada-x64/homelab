@@ -47,7 +47,7 @@ export default function ServerCard({ server }: { server: Server }) {
         ]) {
           const response = await fetch(base + endpoint);
           const body = await response.json();
-          (setter as Dispatch<Object>)(body);
+          (setter as Dispatch<object>)(body);
         }
       } catch {
         tries += 1;
@@ -143,6 +143,7 @@ export default function ServerCard({ server }: { server: Server }) {
   } else {
     content = (
       <ServerStats
+        server={server}
         quicklook={quicklook!}
         containers={containers!}
         uptime={uptime!}

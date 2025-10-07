@@ -1,13 +1,8 @@
-import { type User, type Session } from "better-auth";
 import { useState, type KeyboardEventHandler } from "react";
 import z from "zod";
-// @ts-expect-error No types available
-import { useRouteContext } from "@fastify/react/client";
 import { Card, Button, TextInput, Label, Spinner } from "flowbite-react";
 import cn from "../cn.js";
 import { authClient } from "../auth.js";
-import Navbar from "./navbar.js";
-import Layout from "./layout.js";
 
 export default function Login() {
   const [submitted, setSubmitted] = useState(false);
@@ -25,9 +20,10 @@ export default function Login() {
       password: pw,
     });
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve) => {
       setTimeout(async () => {
         setLoading(false);
+        resolve();
       }, 5000);
     });
   };

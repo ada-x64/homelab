@@ -1,17 +1,11 @@
-import cn, { convertRemToPixels as rem2Px } from "../cn";
 /** @ts-ignore no types */
-import { type Config } from "../../types";
-import { Button, Card, Carousel, Footer, Pagination } from "flowbite-react";
+import { Footer, Pagination } from "flowbite-react";
 import _ from "lodash";
 import AppCard from "./app-card";
 import ServerCard from "./server-card";
-import {
-  useContext,
-  useLayoutEffect,
-  useState,
-  type PropsWithChildren,
-} from "react";
+import { useContext, useState, type PropsWithChildren } from "react";
 import { ConfigCtx } from "../app";
+import cn from "../cn";
 
 export default function Dash() {
   const config = useContext(ConfigCtx)!;
@@ -50,9 +44,8 @@ export default function Dash() {
         <Section page={1} currentPage={page}>
           {config.apps.map((app) => (
             <AppCard
-              key={crypto.randomUUID()}
+              key={app.name + "-" + app.host}
               app={app}
-              servers={config.servers}
               className={cn(["w-full", "lg:max-w-1/2"])}
             />
           ))}
@@ -119,7 +112,7 @@ function ServerWrapper() {
   };
 
   const serverCards = config!.servers.map((server) => (
-    <ServerCard key={crypto.randomUUID()} server={server} />
+    <ServerCard key={server.name + "-" + server.ip} server={server} />
   ));
   return (
     <div className={cn(["w-full", "flex", "flex-col"])}>

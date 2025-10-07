@@ -44,7 +44,7 @@ const init: FastifyPluginCallback = async (server) => {
       );
       return;
     }
-  } catch (_) {
+  } catch {
     server.log.info("Creating administror account.");
     const init = fs.readFileSync("migrations/init.sql", "utf8");
     database.exec(init);
@@ -58,7 +58,7 @@ const init: FastifyPluginCallback = async (server) => {
           password: process.env.ADMIN_PW,
         },
       })
-      .then((res) => {
+      .then((_res) => {
         server.log.info("Successfully signed up admin!");
         server.log.warn(
           "For best security, please restart the server WITHOUT the ADMIN_EMAIL and ADMIN_PW environment variables.",

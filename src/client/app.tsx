@@ -1,8 +1,6 @@
-import { createContext, Suspense, useEffect, useState } from "react";
+import { createContext, Suspense, useState } from "react";
 import Dash from "./components/dash";
-// @ts-expect-error No types available
-import { useRouteContext } from "@fastify/react/client";
-import { Alert, Banner, Card, Spinner } from "flowbite-react";
+import { Alert, Spinner } from "flowbite-react";
 import cn from "./cn.js";
 import { authClient } from "./auth.js";
 import { useStore } from "@nanostores/react";
@@ -13,7 +11,7 @@ import CodeBlock from "./components/code-block.js";
 import Layout from "./components/layout.js";
 
 export const ConfigCtx = createContext<Config | null>(null);
-export function createApp(ctx: { data: { config: Config } }, url: string) {
+export function createApp(ctx: { data: { config: Config } }) {
   return <Router config={ctx.data.config}></Router>;
 }
 

@@ -1,6 +1,8 @@
 services:
   homelab:
-    image: "ada-x64/homelab:latest"
+    image: "ghcr.tio/ada-x64/homelab:latest"
+    volumes:
+      - "./config:/app/config"
     network_mode: "host"
     # Run the server ONCE with these environment variables for initial setup.
     # They will be securely stored in the sqlite database for further use.

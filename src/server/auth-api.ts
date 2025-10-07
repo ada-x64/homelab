@@ -47,7 +47,7 @@ async function getSession(this: FastifyRequest) {
       if (value) headers.append(key, value.toString());
     });
     return await auth.api.getSession({ headers });
-  } catch (error) {
+  } catch {
     return null;
   }
 }

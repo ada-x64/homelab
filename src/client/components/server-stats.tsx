@@ -33,9 +33,9 @@ export default function ServerStats({
         </AccordionTitle>
         <AccordionContent className="overflow-auto max-h-48">
           <AllStats
-            quicklook={quicklook}
-            system={system}
-            uptime={uptime}
+            quicklook={quicklook!}
+            system={system!}
+            uptime={uptime!}
           ></AllStats>
         </AccordionContent>
       </AccordionPanel>

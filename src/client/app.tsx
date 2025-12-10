@@ -9,6 +9,8 @@ import type { Config } from "../types.js";
 import { ErrorBoundary } from "react-error-boundary";
 import CodeBlock from "./components/code-block.js";
 import Layout from "./components/layout.js";
+import { StatusCtx, type ServerStatus } from "./status.js";
+import _ from "lodash";
 
 export const ConfigCtx = createContext<Config | null>(null);
 export function createApp(ctx: { data: { config: Config } }) {
@@ -20,20 +22,30 @@ function Router({ config }: { config: Config }) {
   const [errors, setError] = useState<[Error, React.ErrorInfo] | undefined>(
     undefined,
   );
+  const [allStats, updateAllStats] = useState<{ [x: string]: ServerStatus }>(
+    {},
+  );
+  const setStatus = (server: string, status: ServerStatus) => {
+    let stats = allStats;
+    stats[server] = status;
+    updateAllStats({ ...stats });
+  };
   return (
     <ConfigCtx value={config}>
-      <Layout>
-        <ErrorBoundary
-          onError={(error, info) => {
-            setError([error, info]);
-          }}
-          fallback={<ErrorFallback error={errors} />}
-        >
-          <Suspense fallback={<Fallback />}>
-            {authData.data ? <Dash /> : <Login />}
-          </Suspense>
-        </ErrorBoundary>
-      </Layout>
+      <StatusCtx value={{ allStats, setStatus }}>
+        <Layout>
+          <ErrorBoundary
+            onError={(error, info) => {
+              setError([error, info]);
+            }}
+            fallback={<ErrorFallback error={errors} />}
+          >
+            <Suspense fallback={<Fallback />}>
+              {authData.data ? <Dash /> : <Login />}
+            </Suspense>
+          </ErrorBoundary>
+        </Layout>
+      </StatusCtx>
     </ConfigCtx>
   );
 }

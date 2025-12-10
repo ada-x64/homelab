@@ -33,20 +33,43 @@ const plugin: FastifyPluginAsync = async (server) => {
 
   // apps
   for (const app of config.apps) {
-    const ip = serverMap[app.host].ip;
-    server.register(proxy, {
-      upstream: `http://${ip}:${app.port}`,
-      prefix: app.path,
-      rewritePrefix: app.hostPath,
-    });
+    try {
+      const ip = serverMap[app.host].ip;
+      server.register(proxy, {
+        upstream: `http://${ip}:${app.port}`,
+        prefix: app.path,
+        rewritePrefix: app.hostPath,
+      });
+    } catch (error) {
+      server.log.error(`\
+Unable to register application ${app.name ?? "[unknown]"}!
+Check that your app's host matches a field in the 'servers' object,
+and that the following fields exist:
+- host
+- port
+- path
+- hostPath
+For more info, see the README.`);
+      server.log.info(`config = ${JSON.stringify(app, null, 2)}`);
+      server.log.info(`Available hosts: ${_.keys(serverMap)}`);
+      throw error;
+    }
   }
 
   // status
   for (const cserver of config.servers) {
+    server.log.info(
+      `Registering proxy for ${cserver.name}\n${JSON.stringify(cserver, null, 2)}`,
+    );
     server.register(proxy, {
       upstream: `http://${cserver.ip}:${cserver.status.apiPort}`,
       prefix: `status/${cserver.name.replaceAll(/\s/g, "-")}`,
       rewritePrefix: cserver.status.apiRoute,
+      beforeHandler: () => {
+        server.log.info(
+          ` routing to http://${cserver.ip}:${cserver.status.apiPort} `,
+        );
+      },
     });
   }
 };

@@ -1,26 +1,29 @@
 import { type Server } from "../../types";
 import { Button, Card, Spinner } from "flowbite-react";
 import _ from "lodash";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import ServerStats from "./server-stats";
 import CodeBlock from "./code-block";
-import { StatusCtx } from "../status";
+import { pingServer, StatusCtx } from "../status";
 
 export default function ServerCard({ server }: { server: Server }) {
-  const allStats = useContext(StatusCtx);
-  const stats = allStats[server.name];
+  const ctx = useContext(StatusCtx);
+  const stats = ctx.allStats[server.name];
 
   const [retry, setRetry] = useState<number>(0);
+  useEffect(() => {
+    pingServer(server, ctx);
+  }, [retry]);
 
   let content;
-  if (!stats.failed && stats.quicklook == null && stats.containers == null) {
+  if (stats.status == "loading") {
     content = (
       <div className="flex flex-1 justify-center flex-col items-center gap-5">
         <Spinner size="lg"></Spinner>
         {server.wakeOnLan ? <WolButton server={server} /> : <></>}
       </div>
     );
-  } else if (stats.failed) {
+  } else if (stats.status === "down") {
     content = (
       <>
         <div className="text-yellow-300 font-bold">Failed to fetch.</div>

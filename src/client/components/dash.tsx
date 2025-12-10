@@ -5,11 +5,11 @@ import ServerCard from "./server-card";
 import { useContext, useMemo, useState, type PropsWithChildren } from "react";
 import { ConfigCtx } from "../app";
 import cn from "../cn";
-import { pingServer, setupPing, StatusCtx } from "../status";
+import { pingServer, initStatusCtx, StatusCtx } from "../status";
 
 export default function Dash() {
   const config = useContext(ConfigCtx)!;
-  const allStats = useContext(StatusCtx);
+  const statusCtx = useContext(StatusCtx);
 
   const [page, setPage] = useState(1);
   const onPageChange = (page: number) => {
@@ -18,9 +18,9 @@ export default function Dash() {
 
   // set up ping
   useMemo(() => {
-    setupPing(config, allStats);
+    initStatusCtx(config, statusCtx);
     for (const server of config.servers) {
-      pingServer(server, allStats[server.name]);
+      pingServer(server, statusCtx);
     }
   }, []);
 

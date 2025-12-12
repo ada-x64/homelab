@@ -89,6 +89,10 @@ export function pingServer(
       } else {
         status.status = "down";
       }
+    } else {
+      status.tries = 0;
+      // timeout so we don't get stack overflow and so we get heartbeat pattern
+      setTimeout(async () => await ping(), 1000);
     }
   };
 

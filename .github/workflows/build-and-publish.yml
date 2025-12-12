@@ -1,11 +1,12 @@
 name: Build and Publish Container
 
 on:
-  push:
-    branches: [main, master]
+  workflow_run:
+    workflows: ["lint"]
+    types:
+      - completed
+    branches: [main]
     tags: ["v*"]
-  pull_request:
-    branches: [main, master]
 
 env:
   REGISTRY: ghcr.io

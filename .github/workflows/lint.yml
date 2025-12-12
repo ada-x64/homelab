@@ -1,0 +1,26 @@
+name: lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v6
+        with:
+          cache: "yarn"
+
+      - name: Install deps
+        run: yarn install
+
+      - name: Lint and format
+        run: yarn oxlint && yarn prettier -c ./src
+
+      - name: Build
+        run: yarn build

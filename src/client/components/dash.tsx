@@ -5,82 +5,86 @@ import ServerCard from "./server-card";
 import { useContext, useMemo, useState, type PropsWithChildren } from "react";
 import { ConfigCtx } from "../app";
 import cn from "../cn";
-import { pingServer, initStatusCtx, StatusCtx } from "../status";
+import { AllStats, pingServer, StatusCtx, type ServerStatus } from "../status";
 
 export default function Dash() {
   const config = useContext(ConfigCtx)!;
-  const statusCtx = useContext(StatusCtx);
+
+  const [allStats, updateAllStats] = useState(new AllStats(config));
+  const setStatus = (server: string, status: ServerStatus) => {
+    allStats.stats[server] = status;
+    updateAllStats({ ...allStats });
+  };
 
   const [page, setPage] = useState(1);
   const onPageChange = (page: number) => {
     setPage(page);
   };
 
-  // set up ping
   useMemo(() => {
-    initStatusCtx(config, statusCtx);
-    for (const server of config.servers) {
-      pingServer(server, statusCtx);
-    }
+    config.servers.forEach((server) => {
+      pingServer(server, allStats.stats[server.name], setStatus);
+    });
   }, []);
 
   return (
-    // page container
-    <div
-      className={cn([
-        "h-full",
-        "w-full",
-        "flex",
-        "flex-col",
-        "justify-between",
-        "items-center",
-        "flex-1",
-      ])}
-    >
-      {/* main body */}
+    <StatusCtx value={{ allStats, setStatus }}>
       <div
         className={cn([
-          "flex-1",
-          "items-center",
-          "justify-center",
-          "gap-10",
+          "h-full",
           "w-full",
-          "p-4",
-          "lg:px-10",
-          "lg:grid-cols-2",
-          "lg:grid",
+          "flex",
+          "flex-col",
+          "justify-between",
+          "items-center",
+          "flex-1",
         ])}
       >
-        <Section page={1} currentPage={page}>
-          {config.apps.map((app) => (
-            <AppCard
-              key={app.name + "-" + app.host}
-              app={app}
-              className={cn(["w-full", "lg:max-w-1/2"])}
-            />
-          ))}
-        </Section>
+        {/* main body */}
+        <div
+          className={cn([
+            "flex-1",
+            "items-center",
+            "justify-center",
+            "gap-10",
+            "w-full",
+            "p-4",
+            "lg:px-10",
+            "lg:grid-cols-2",
+            "lg:grid",
+          ])}
+        >
+          <Section page={1} currentPage={page}>
+            {config.apps.map((app) => (
+              <AppCard
+                key={app.name + "-" + app.host}
+                app={app}
+                className={cn(["w-full", "lg:max-w-1/2"])}
+              />
+            ))}
+          </Section>
 
-        <Section page={2} currentPage={page} className={"h-full"}>
-          <ServerWrapper />
-        </Section>
+          <Section page={2} currentPage={page} className={"h-full"}>
+            <ServerWrapper />
+          </Section>
+        </div>
+
+        {/* footer */}
+        <Footer
+          className="flex justify-center items-center p-4 lg:hidden"
+          theme={{ root: { base: "rounded-none" } }}
+        >
+          <Pagination
+            layout="navigation"
+            currentPage={page}
+            totalPages={2}
+            onPageChange={onPageChange}
+            nextLabel={"Stats"}
+            previousLabel={"Apps"}
+          />
+        </Footer>
       </div>
-
-      {/* footer */}
-      <Footer
-        className="flex justify-center items-center p-4 lg:hidden"
-        theme={{ root: { base: "rounded-none" } }}
-      >
-        <Pagination
-          layout="navigation"
-          currentPage={page}
-          totalPages={2}
-          onPageChange={onPageChange}
-          nextLabel={"Stats"}
-          previousLabel={"Apps"}
-        />
-      </Footer>
-    </div>
+    </StatusCtx>
   );
 }
 

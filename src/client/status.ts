@@ -21,71 +21,76 @@ export type ServerStatus = {
   maxTries: number;
 };
 
-export type StatusCtxType = {
-  allStats: { [x: string]: ServerStatus };
-  setStatus: (server: string, status: ServerStatus) => void;
-};
-
-export const StatusCtx = createContext<StatusCtxType>({
-  allStats: {},
-  setStatus: () => {},
-});
-
-export function initStatusCtx(config: Config, ctx: StatusCtxType) {
-  console.log("Setting up ping.");
-  for (const server of config.servers) {
-    // set up
-    let stats = ctx.allStats[server.name];
-    if (stats == undefined) {
-      ctx.setStatus(server.name, {
+export class AllStats {
+  stats: { [x: string]: ServerStatus } = {};
+  constructor(config: Config) {
+    for (const server of config.servers) {
+      // set up
+      this.stats[server.name] = {
         status: "loading",
         retry: 0,
         showInfo: false,
         tries: 0,
         maxTries: 3,
-      });
-      stats = ctx.allStats[server.name];
+      };
     }
   }
 }
 
-export function pingServer(server: Server, ctx: StatusCtxType) {
+export type StatusCtxType = {
+  allStats: AllStats;
+  setStatus: (server: string, status: ServerStatus) => void;
+};
+/** @ts-ignore */
+export const StatusCtx = createContext<StatusCtxType>(undefined);
+
+export function pingServer(
+  server: Server,
+  status: ServerStatus,
+  setStatus: any,
+) {
   console.log("Pinging server", server.name);
-  const stats = ctx.allStats[server.name];
-  stats.tries = 0;
-  stats.status = "loading";
-  let interval: string | number | NodeJS.Timeout | undefined;
+  status.tries = 0;
+  status.status = "loading";
   const ping = async () => {
+    let success = false;
     // ping
     try {
-      if (!interval) {
-        interval = setInterval(ping, 2000);
-      }
-      const base = `/stats/${server.name.replaceAll(/\s/g, "-")}/`;
+      const base = `/status/${server.name.replaceAll(/\s/g, "-")}/`;
       for (const field of ["quicklook", "containers", "uptime", "system"]) {
-        const response = await fetch(base + field);
+        const ctrl = new AbortController();
+        setTimeout(() => {
+          ctrl.abort();
+        }, 5000);
+        const response = await fetch(base + field, { signal: ctrl.signal });
         const body = await response.json();
         if (body.error) {
           throw body.error;
         }
 
         /** @ts-ignore */
-        stats[field] = body;
-        stats.showInfo = false;
+        status[field] = body;
+        status.showInfo = false;
+        success = true;
       }
-      stats.status = "up";
+      console.log(` Succesfully pinged ${server.name}`);
+      status.status = "up";
     } catch {
       console.log(
-        `Failed to ping server ${server.name} (${stats.tries}/${stats.maxTries})`,
+        `Failed to ping server ${server.name} (${status.tries}/${status.maxTries})`,
       );
-      stats.tries += 1;
-      stats.showInfo = true;
-      if (stats.tries > stats.maxTries) {
-        stats.status = "down";
-        clearInterval(interval);
+      status.tries += 1;
+      status.showInfo = true;
+    }
+    setStatus(server.name, status);
+    if (!success) {
+      if (status.tries < status.maxTries) {
+        await ping();
+      } else {
+        status.status = "down";
       }
     }
-    ctx.setStatus(server.name, stats);
   };
+
   ping();
 }

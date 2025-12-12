@@ -15,7 +15,7 @@ export default function AppIcon({
   const { allStats } = useContext(StatusCtx);
   let stats;
   try {
-    stats = allStats[app.host];
+    stats = allStats.stats[app.host] ?? { status: "loading" };
   } catch {
     stats = { status: "down" };
   }
@@ -60,7 +60,7 @@ export default function AppIcon({
             <div>
               {app.host}
               {stats.status === "loading"
-                ? ` (${stats.tries}/${stats.maxTries})`
+                ? ` (${stats.tries + 1}/${stats.maxTries})`
                 : ""}
             </div>
           </div>

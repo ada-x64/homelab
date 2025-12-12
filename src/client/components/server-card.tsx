@@ -1,7 +1,7 @@
 import { type Server } from "../../types";
 import { Button, Card, Spinner } from "flowbite-react";
 import _ from "lodash";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import ServerStats from "./server-stats";
 import CodeBlock from "./code-block";
 import { pingServer, StatusCtx } from "../status";

@@ -11,16 +11,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup node
-        uses: actions/setup-node@v6
-        with:
-          cache: "yarn"
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
 
-      - name: Install deps
-        run: yarn install
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Lint and format
-        run: yarn oxlint && yarn prettier -c ./src
+        run: pnpm oxlint && pnpm prettier -c ./src
 
       - name: Build
-        run: yarn build
+        run: pnpm build

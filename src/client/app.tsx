@@ -9,7 +9,6 @@ import type { Config } from "../types.js";
 import { ErrorBoundary } from "react-error-boundary";
 import CodeBlock from "./components/code-block.js";
 import Layout from "./components/layout.js";
-import { StatusCtx, type ServerStatus } from "./status.js";
 import _ from "lodash";
 
 export const ConfigCtx = createContext<Config | null>(null);

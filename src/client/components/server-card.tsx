@@ -8,17 +8,13 @@ import { pingServer, StatusCtx } from "../status";
 
 export default function ServerCard({ server }: { server: Server }) {
   const ctx = useContext(StatusCtx);
-  const stats = ctx.allStats[server.name];
-
-  const [retry, setRetry] = useState<number>(0);
-  useEffect(() => {
-    pingServer(server, ctx);
-  }, [retry]);
+  const stats = ctx.allStats.stats[server.name] ?? { status: "loading" };
 
   let content;
   if (stats.status == "loading") {
     content = (
       <div className="flex flex-1 justify-center flex-col items-center gap-5">
+        {`Fetching... (Try ${stats.tries + 1}/${stats.maxTries})`}
         <Spinner size="lg"></Spinner>
         {server.wakeOnLan ? <WolButton server={server} /> : <></>}
       </div>
@@ -30,7 +26,13 @@ export default function ServerCard({ server }: { server: Server }) {
         <Button
           color="alternative"
           onClick={() => {
-            setRetry(retry + 1);
+            ctx.setStatus(server.name, {
+              ...stats,
+              retry: stats.retry + 1,
+              tries: 0,
+              status: "loading",
+            });
+            pingServer(server, stats, ctx.setStatus);
           }}
         >
           Retry

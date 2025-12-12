@@ -65,10 +65,10 @@ For more info, see the README.`);
       upstream: `http://${cserver.ip}:${cserver.status.apiPort}`,
       prefix: `status/${cserver.name.replaceAll(/\s/g, "-")}`,
       rewritePrefix: cserver.status.apiRoute,
-      beforeHandler: () => {
-        server.log.info(
-          ` routing to http://${cserver.ip}:${cserver.status.apiPort} `,
-        );
+      http: {
+        requestOptions: {
+          timeout: 5000,
+        },
       },
     });
   }
